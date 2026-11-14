@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>鋪草皮遊戲 — 實境桌遊版</title>
+    <title>翁少的計謀：草皮戰爭</title>
     <style>
         :root {
             --studio-bg: #26292e;
@@ -12,6 +12,7 @@
             --stone-tile: #b5ada0;
             --grid-line: #3b3732;
             --neon-lime: #d8ff2e;
+            --gold-accent: #d4af37;
 
             --p0-color: #3b82f6;
             --p1-color: #f59e0b;
@@ -55,8 +56,270 @@
         .chamfer-md {
             clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
         }
+        .chamfer-lg {
+            clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px);
+        }
 
-        /* 頂部標題與功能列 */
+        /* =========================================================
+           開場主視覺畫面：翁少的計謀：草皮戰爭
+           ========================================================= */
+        #title-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background-color: #16181c;
+            background-image:
+                radial-gradient(circle at 50% 38%, rgba(216, 255, 46, 0.12) 0%, rgba(46, 139, 71, 0.08) 32%, transparent 70%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 28px 28px, 28px 28px;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+        #title-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .title-frame-outer {
+            width: 100%;
+            max-width: 400px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--gold-accent) 0%, rgba(212,175,55,0.25) 50%, var(--neon-lime) 100%);
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.85);
+        }
+        .title-frame-inner {
+            background: radial-gradient(circle at top, #23272e 0%, #131518 100%);
+            padding: 34px 22px 30px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* 裝飾性迷你草皮拼圖徽章 */
+        .hero-emblem {
+            display: grid;
+            grid-template-columns: repeat(5, 14px);
+            grid-template-rows: repeat(5, 14px);
+            gap: 2px;
+            padding: 8px;
+            background: #1c1915;
+            border: 2px solid #5c5043;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6), 0 0 18px rgba(216, 255, 46, 0.18);
+        }
+        .emblem-cell {
+            background: #b5ada0;
+            border-radius: 1px;
+        }
+        .emblem-cell.turf {
+            background-color: #2f8e4b;
+            background-image: radial-gradient(rgba(255,255,255,0.22) 1px, transparent 0);
+            background-size: 3px 3px;
+            box-shadow: inset 0 0 0 1px #102415;
+        }
+        .emblem-cell.glow {
+            box-shadow: inset 0 0 0 1.5px var(--neon-lime);
+        }
+
+        .hero-kicker {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: var(--gold-accent);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .hero-title-main {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 3px 10px rgba(0,0,0,0.7);
+        }
+        .hero-divider {
+            width: 64px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-lime), transparent);
+            margin: 12px 0;
+        }
+        .hero-title-sub {
+            margin: 0 0 26px 0;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: var(--neon-lime);
+            text-shadow: 0 0 16px rgba(216, 255, 46, 0.35);
+        }
+
+        .hero-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 26px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .hero-tag {
+            font-size: 11px;
+            font-weight: 700;
+            color: #d1d5db;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.14);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .btn-enter-game {
+            width: 100%;
+            max-width: 260px;
+            padding: 15px 24px;
+            font-size: 17px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #111827;
+            background: linear-gradient(180deg, #e5ff54 0%, #b8e600 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(216, 255, 46, 0.35);
+            transition: transform 0.12s ease, filter 0.15s ease;
+        }
+        .btn-enter-game:active {
+            transform: scale(0.96);
+            filter: brightness(0.92);
+        }
+
+        /* =========================================================
+           遊戲教學畫面 (#tutorial-screen)
+           ========================================================= */
+        #tutorial-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 450;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(12, 14, 17, 0.88);
+            backdrop-filter: blur(6px);
+        }
+        #tutorial-screen.visible {
+            display: flex;
+        }
+
+        .tutorial-outer {
+            width: 100%;
+            max-width: 440px;
+            max-height: 88dvh;
+            padding: 2px;
+            background: linear-gradient(180deg, var(--gold-accent) 0%, rgba(212,175,55,0.35) 100%);
+            box-shadow: 0 20px 48px rgba(0,0,0,0.85);
+            display: flex;
+        }
+        .tutorial-inner {
+            width: 100%;
+            background: #191c21;
+            padding: 20px 18px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+        }
+
+        .tut-header {
+            text-align: center;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            padding-bottom: 10px;
+        }
+        .tut-header h3 {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 900;
+            color: var(--neon-lime);
+            letter-spacing: 1.5px;
+        }
+        .tut-header p {
+            margin: 4px 0 0 0;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .tut-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .tut-card {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: #121418;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: 3.5px solid var(--gold-accent);
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+        .tut-card.highlight {
+            border-left-color: var(--neon-lime);
+        }
+        .tut-icon {
+            font-size: 22px;
+            line-height: 1.2;
+            flex-shrink: 0;
+            width: 30px;
+            text-align: center;
+        }
+        .tut-body h4 {
+            margin: 0 0 3px 0;
+            font-size: 14px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .tut-body p {
+            margin: 0;
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: #d1d5db;
+        }
+        .tut-em {
+            color: var(--neon-lime);
+            font-weight: 800;
+        }
+        .tut-gold {
+            color: #facc15;
+            font-weight: 800;
+        }
+
+        .btn-start-match {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #052e16;
+            background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+            flex-shrink: 0;
+        }
+        .btn-start-match:active {
+            transform: scale(0.97);
+        }
+
+        /* =========================================================
+           主遊戲頂部標題與功能列
+           ========================================================= */
         .header-bar {
             display: flex;
             justify-content: space-between;
@@ -64,39 +327,40 @@
             width: 95vw;
             max-width: 560px;
             margin-bottom: 6px;
+            gap: 6px;
         }
         .title-group {
             display: flex;
             align-items: baseline;
-            gap: 6px;
+            gap: 5px;
+            min-width: 0;
         }
         .title-group h2 {
             margin: 0;
-            font-size: 17px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
             color: #ffffff;
             text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-        }
-        .title-sub {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #9ca3af;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .header-actions {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             align-items: center;
+            flex-shrink: 0;
         }
         .btn-icon {
             background: var(--panel-dark);
             color: #d1d5db;
             border: 1px solid var(--panel-border);
-            width: 30px;
+            width: 29px;
             height: 28px;
             border-radius: 6px;
             font-size: 13px;
+            font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -106,7 +370,7 @@
             background: linear-gradient(180deg, #eab308 0%, #ca8a04 100%);
             color: #111827;
             border: none;
-            padding: 5px 11px;
+            padding: 5px 10px;
             font-size: 12px;
             font-weight: 800;
             cursor: pointer;
@@ -358,7 +622,6 @@
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
         }
 
-        /* 拖曳時跟隨手指的浮動草皮幽靈 */
         #drag-ghost {
             position: fixed;
             display: none;
@@ -459,7 +722,7 @@
             cursor: pointer;
         }
 
-        /* 做舊實木外框 + 20x20 石板棋盤 (自動避開 Safari 底部網址列) */
+        /* 做舊實木外框 + 20x20 石板棋盤 */
         .board-wood-frame {
             position: relative;
             width: min(94vw, 47dvh, 520px);
@@ -501,7 +764,6 @@
             box-shadow: inset 1px 1px 0 rgba(255,255,255,0.22);
         }
 
-        /* 花崗岩死地石頭 */
         .stone {
             background-color: #57534e;
             background-image: radial-gradient(circle at 30% 30%, #78716c 0%, #44403c 70%, #292524 100%);
@@ -516,7 +778,6 @@
             background: repeating-linear-gradient(45deg, rgba(0,0,0,0.18) 0 2px, transparent 2px 4px);
         }
 
-        /* 搶奪卡 */
         .steal-card {
             background: radial-gradient(circle at center, #ffffff 45%, #e5e7eb 100%);
             box-shadow: inset 0 0 0 1.5px #9ca3af;
@@ -533,7 +794,6 @@
             font-weight: 900;
         }
 
-        /* 擬真人工草皮拼圖 */
         .placed {
             z-index: 2;
             background-color: #2d8a49;
@@ -574,7 +834,6 @@
         .placed-p2.piece-anchor::before { background: var(--p2-color); }
         .placed-p3.piece-anchor::before { background: var(--p3-color); }
 
-        /* 放置預覽 */
         .preview-valid-p0 { background: rgba(59, 130, 246, 0.75) !important; box-shadow: inset 0 0 0 1.5px #bfdbfe; z-index: 5; }
         .preview-valid-p1 { background: rgba(245, 158, 11, 0.75) !important; box-shadow: inset 0 0 0 1.5px #fef08a; z-index: 5; }
         .preview-valid-p2 { background: rgba(239, 68, 68, 0.75) !important; box-shadow: inset 0 0 0 1.5px #fecaca; z-index: 5; }
@@ -594,7 +853,6 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.9);
         }
 
-        /* 5x5 達成霓虹萊姆綠外框 */
         .glow-top    { border-top: 2.5px solid var(--neon-lime) !important; z-index: 6; }
         .glow-right  { border-right: 2.5px solid var(--neon-lime) !important; z-index: 6; }
         .glow-bottom { border-bottom: 2.5px solid var(--neon-lime) !important; z-index: 6; }
@@ -611,7 +869,7 @@
             font-size: 10px;
             font-weight: 900;
             padding: 2px 6px;
-            border: 1.5px solid #d4af37;
+            border: 1.5px solid var(--gold-accent);
             clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px);
             box-shadow: 0 3px 8px rgba(0,0,0,0.75);
             pointer-events: none;
@@ -633,7 +891,7 @@
             pointer-events: none;
             transition: opacity 0.25s, transform 0.25s;
             transform: translateY(-10px);
-            z-index: 150;
+            z-index: 600;
             max-width: 90vw;
             text-align: center;
         }
@@ -650,12 +908,12 @@
             backdrop-filter: blur(4px);
             justify-content: center;
             align-items: center;
-            z-index: 200;
+            z-index: 300;
             padding: 20px;
         }
         .modal-box {
             background: #1c1f24;
-            border: 1.5px solid #d4af37;
+            border: 1.5px solid var(--gold-accent);
             padding: 20px;
             width: 92%;
             max-width: 380px;
@@ -707,12 +965,120 @@
     <div id="toast" class="chamfer-sm"></div>
     <div id="drag-ghost"></div>
 
+    <!-- =========================================================
+         第一層：開場主視覺畫面 — 翁少的計謀：草皮戰爭
+         ========================================================= -->
+    <section id="title-screen">
+        <div class="title-frame-outer chamfer-lg">
+            <div class="title-frame-inner chamfer-lg">
+                <!-- 迷你草皮拼圖 5x5 徽章 -->
+                <div class="hero-emblem" aria-hidden="true">
+                    <div class="emblem-cell"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell"></div>
+
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell"></div>
+
+                    <div class="emblem-cell"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell turf glow"></div>
+                    <div class="emblem-cell"></div>
+                    <div class="emblem-cell"></div>
+                </div>
+
+                <div class="hero-kicker">MASTER WENG'S SCHEME</div>
+                <h1 class="hero-title-main">翁少的計謀</h1>
+                <div class="hero-divider"></div>
+                <p class="hero-title-sub">草皮戰爭</p>
+
+                <div class="hero-tags">
+                    <span class="hero-tag">20×20 領地博弈</span>
+                    <span class="hero-tag">5×5 資格判定</span>
+                    <span class="hero-tag">4 人同機對決</span>
+                </div>
+
+                <button class="btn-enter-game chamfer-sm" onclick="enterGameToTutorial()">進入遊戲</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         第二層：遊戲教學說明頁
+         ========================================================= -->
+    <section id="tutorial-screen">
+        <div class="tutorial-outer chamfer-lg">
+            <div class="tutorial-inner chamfer-lg">
+                <div class="tut-header">
+                    <h3>📜 遊戲教學與規則</h3>
+                    <p>翁少的計謀：草皮戰爭 — 戰術指南</p>
+                </div>
+
+                <div class="tut-cards">
+                    <div class="tut-card highlight">
+                        <div class="tut-icon">👑</div>
+                        <div class="tut-body">
+                            <h4>勝利條件：至少完成 5×5 領地</h4>
+                            <p>四位玩家輪流在 20×20 棋盤鋪設草皮。結算時，你<span class="tut-em">必須擁有至少一塊 5×5（或更大）的實心正方形領地</span>才具備獲勝資格，合格者中佔領總格數最多者勝出！</p>
+                        </div>
+                    </div>
+
+                    <div class="tut-card">
+                        <div class="tut-icon">👆</div>
+                        <div class="tut-body">
+                            <h4>手機操作：拖曳或輕點微調</h4>
+                            <p>• <span class="tut-gold">拖曳放置</span>：按住左上角草皮托盤直接拖進棋盤放開（輕點托盤可快速旋轉）。<br>• <span class="tut-gold">點擊微調</span>：輕點棋盤鎖定預覽位置，調整旋轉／翻轉後按「確認放置」。</p>
+                        </div>
+                    </div>
+
+                    <div class="tut-card">
+                        <div class="tut-icon">⚔️</div>
+                        <div class="tut-body">
+                            <h4>特殊地形：石頭與搶奪卡</h4>
+                            <p>• <span class="tut-gold">石頭障礙</span>：無法覆蓋的死地。<br>• <span class="tut-gold">搶奪卡（⚔）</span>：草皮覆蓋後<span class="tut-em">立即發動</span>，可點擊將對手任意 1 格草皮佔為己有（可藉此瓦解對手的 5×5！）。</p>
+                        </div>
+                    </div>
+
+                    <div class="tut-card">
+                        <div class="tut-icon">🎫</div>
+                        <div class="tut-body">
+                            <h4>草皮調換券：替換與轉贈</h4>
+                            <p>每位玩家開局持有 1 張調換券。輪到你時可點擊<span class="tut-gold">「調換」</span>從「後續 5 片」中任選替換，或點擊<span class="tut-gold">「贈送」</span>將票券轉讓給其他玩家進行結盟交易。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-start-match chamfer-sm" onclick="closeTutorial()">開始對戰</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         第三層：主遊戲對戰舞台
+         ========================================================= -->
     <div class="header-bar">
         <div class="title-group">
-            <h2>鋪草皮遊戲</h2>
-            <span class="title-sub">TURF LAYING · v2.1</span>
+            <h2>翁少的計謀：草皮戰爭</h2>
         </div>
         <div class="header-actions">
+            <button class="btn-icon" onclick="openTutorial()" title="遊戲教學">?</button>
             <button class="btn-icon" id="btn-sound" onclick="toggleSound()" title="音效開關">🔊</button>
             <button class="btn-end chamfer-sm" onclick="endGame()">結算勝負</button>
         </div>
@@ -766,7 +1132,7 @@
         </div>
     </div>
 
-    <!-- 輕點棋盤釘選預覽時出現的快速確認欄 -->
+    <!-- 輕點棋盤釘選預覽時出現的快速確認浮動條 -->
     <div id="confirm-bar">
         <button id="btn-confirm-place" onclick="confirmPinnedPlacement()">✓ 確認放置草皮</button>
         <button id="btn-cancel-pin" onclick="clearPinnedPreview()">取消</button>
@@ -804,6 +1170,8 @@
         document.addEventListener('selectstart', (e) => e.preventDefault());
         document.addEventListener('contextmenu', (e) => e.preventDefault());
 
+        const titleScreenElement = document.getElementById('title-screen');
+        const tutorialScreenElement = document.getElementById('tutorial-screen');
         const boardElement = document.getElementById('board');
         const miniPreviewElement = document.getElementById('mini-preview');
         const trayOuterElement = document.getElementById('tray-outer');
@@ -818,6 +1186,26 @@
         const cols = 20;
         let cells = []; 
         let nextPieceUid = 1;
+
+        // ==========================================
+        // 開場畫面與教學流程控制
+        // ==========================================
+        function enterGameToTutorial() {
+            playTone('click');
+            titleScreenElement.classList.add('hidden');
+            tutorialScreenElement.classList.add('visible');
+        }
+
+        function openTutorial() {
+            playTone('click');
+            tutorialScreenElement.classList.add('visible');
+        }
+
+        function closeTutorial() {
+            playTone('achieve');
+            tutorialScreenElement.classList.remove('visible');
+            showToast('🎮 玩家 1 (藍色) 先攻，請鋪設第一片草皮！');
+        }
 
         // ==========================================
         // 內建 Web Audio API 實體音效
@@ -1342,7 +1730,6 @@
             }
         }
 
-        // 渲染跟隨手指的浮動草皮幽靈
         function showDragGhost(clientX, clientY) {
             dragGhostElement.innerHTML = '';
             const rLen = currentShape.length;
@@ -1403,7 +1790,7 @@
         // ==========================================
         // iOS Safari 強化觸控 & 滑鼠雙模操控引擎
         // ==========================================
-        let activeDragSource = null; // 'tray' | 'board' | null
+        let activeDragSource = null;
         let touchStartX = 0;
         let touchStartY = 0;
         let hasMovedSignificantly = false;
@@ -1576,7 +1963,6 @@
             }
 
             if (coord) {
-                // 一旦拖進棋盤範圍內，隱藏手指幽靈改用精準棋盤網格預覽
                 if (activeDragSource === 'tray') hideDragGhost();
                 const origin = getCenteredShapeOrigin(coord.row, coord.col);
                 lastPreviewStart = origin;
@@ -1644,7 +2030,6 @@
             }
         }
 
-        // 綁定觸控事件
         trayOuterElement.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const t = e.touches[0];
@@ -1676,7 +2061,6 @@
             clearPreview();
         });
 
-        // 綁定滑鼠事件
         trayOuterElement.addEventListener('mousedown', (e) => {
             onInteractionStart('tray', e.clientX, e.clientY, false);
         });
