@@ -6,20 +6,13 @@
     <title>鋪草皮遊戲 — 實境桌遊版</title>
     <style>
         :root {
-            /* 演播室與實體桌遊材質色票 */
             --studio-bg: #26292e;
-            --studio-concrete: #30343a;
             --panel-dark: #181a1d;
-            --panel-elevated: #22252a;
             --panel-border: rgba(255, 255, 255, 0.22);
-            --wood-outer: #493f35;
-            --wood-inner: #2e2720;
             --stone-tile: #b5ada0;
-            --stone-tile-light: #c2bab0;
             --grid-line: #3b3732;
             --neon-lime: #d8ff2e;
 
-            /* 4位玩家識別色 */
             --p0-color: #3b82f6;
             --p1-color: #f59e0b;
             --p2-color: #ef4444;
@@ -30,6 +23,7 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            -webkit-user-select: none;
         }
 
         body {
@@ -39,9 +33,8 @@
             align-items: center;
             min-height: 100dvh;
             margin: 0;
-            padding: 10px 8px 18px 8px;
+            padding: 10px 8px 24px 8px;
             color: #f3f4f6;
-            /* 建築混凝土演播室地面質感 */
             background-color: var(--studio-bg);
             background-image: 
                 radial-gradient(circle at 50% 25%, rgba(255,255,255,0.05) 0%, transparent 65%),
@@ -49,7 +42,6 @@
                 repeating-linear-gradient(90deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 4px);
         }
 
-        /* 八角切角幾何工具類 (還原節目道具與廣播 UI 語言) */
         .chamfer-sm {
             clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
         }
@@ -84,7 +76,6 @@
             font-weight: 700;
             letter-spacing: 1.5px;
             color: #9ca3af;
-            text-transform: uppercase;
         }
         .header-actions {
             display: flex;
@@ -111,11 +102,9 @@
             padding: 6px 12px;
             font-size: 13px;
             font-weight: 800;
-            letter-spacing: 0.5px;
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.4);
         }
-        .btn-end:active { transform: scale(0.96); }
 
         /* 4人即時記分板 */
         #scoreboard {
@@ -149,7 +138,7 @@
 
         .score-card.active-turn {
             background: #272b33;
-            border-color: rgba(255,255,255,0.55);
+            border-color: rgba(255,255,255,0.6);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.45);
         }
@@ -185,7 +174,6 @@
             border-radius: 3px;
             font-size: 10px;
             font-weight: 800;
-            letter-spacing: 0.5px;
             background: #111315;
             color: #6b7280;
             border: 1px solid rgba(255,255,255,0.08);
@@ -205,7 +193,7 @@
             text-align: center;
             font-size: 14px;
             font-weight: 800;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
             margin-bottom: 8px;
             background: var(--panel-dark);
             border: 1px solid rgba(255,255,255,0.3);
@@ -273,22 +261,17 @@
             background: #111316;
             border: 1px solid rgba(255,255,255,0.14);
             border-radius: 4px;
-            height: 46px;
+            height: 44px;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 2px;
             cursor: default;
-            transition: transform 0.15s, border-color 0.15s;
         }
         .queue-bar.swap-active .queue-item {
             cursor: pointer;
             border: 1.5px dashed #facc15;
             background: #1f1c12;
-        }
-        .queue-bar.swap-active .queue-item:active {
-            transform: scale(0.93);
-            background: #facc15;
         }
         .queue-num {
             position: absolute;
@@ -297,23 +280,15 @@
             font-size: 9px;
             color: #6b7280;
             font-weight: 800;
-            font-variant-numeric: tabular-nums;
         }
-        .queue-grid {
-            display: grid;
-            gap: 1px;
-        }
-        .q-cell {
-            width: 6px;
-            height: 6px;
-        }
+        .queue-grid { display: grid; gap: 1px; }
+        .q-cell { width: 6px; height: 6px; }
         .q-cell.filled {
             background: #2e8b47;
             border: 0.5px solid #143d1f;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
         }
 
-        /* 操控區：還原節目左上角「八角切角草皮托盤」 + 2x2 戰術按鍵 */
+        /* 操控區：可拖曳的八角切角草皮托盤 + 戰術按鍵 */
         .controls {
             display: flex;
             align-items: center;
@@ -323,30 +298,46 @@
             margin-bottom: 10px;
         }
 
-        /* 節目同款深色八角切角草皮托盤 */
         .tray-outer {
             position: relative;
-            width: 74px;
-            height: 74px;
+            width: 78px;
+            height: 78px;
             flex-shrink: 0;
             background: rgba(255, 255, 255, 0.65);
-            padding: 2px;
+            padding: 2.5px;
             box-shadow: 0 6px 14px rgba(0,0,0,0.55);
-            transition: opacity 0.25s;
+            cursor: grab;
+            touch-action: none; /* 關鍵：允許直接從托盤按住拖曳到棋盤 */
+            transition: transform 0.15s, opacity 0.25s;
+        }
+        .tray-outer:active {
+            cursor: grabbing;
+            transform: scale(0.95);
         }
         .tray-inner {
+            position: relative;
             width: 100%;
             height: 100%;
             background: radial-gradient(circle at center, #262a2e 0%, #141619 100%);
             display: flex;
             align-items: center;
             justify-content: center;
+            pointer-events: none;
+        }
+        .tray-hint {
+            position: absolute;
+            bottom: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 0.5px;
         }
         #mini-preview {
             display: grid;
             gap: 0px;
             justify-content: center;
             align-content: center;
+            margin-bottom: 6px;
         }
         .mini-cell {
             width: 12px;
@@ -375,9 +366,8 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 700;
-            letter-spacing: 0.5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.35);
-            transition: transform 0.1s, opacity 0.2s, border-color 0.2s;
+            touch-action: manipulation;
         }
         .btn-grid button:active:not(:disabled) {
             transform: scale(0.97);
@@ -401,15 +391,54 @@
             color: #6ee7b7;
         }
 
-        /* =========================================================
-           核心舞台：做舊實木外框 + 暖灰石板 20x20 棋盤
-           ========================================================= */
+        /* 釘選預覽時的快速確認浮動條 */
+        #confirm-bar {
+            display: none;
+            width: 95vw;
+            max-width: 580px;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        #confirm-bar.visible {
+            display: flex;
+        }
+        #btn-confirm-place {
+            flex: 2;
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+            color: #052e16;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(34, 197, 94, 0.4);
+        }
+        #btn-confirm-place:disabled {
+            background: #4b5563;
+            color: #9ca3af;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        #btn-cancel-pin {
+            flex: 1;
+            background: #374151;
+            color: #e5e7eb;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* 做舊實木外框 + 20x20 石板棋盤 */
         .board-wood-frame {
             position: relative;
             width: min(95vw, 560px);
             padding: 10px;
             border-radius: 4px;
-            /* 擬真深色做舊實木紋理 */
             background: 
                 repeating-linear-gradient(90deg, rgba(0,0,0,0.14) 0px, rgba(0,0,0,0.14) 2px, transparent 2px, transparent 7px),
                 linear-gradient(135deg, #5c5043 0%, #443b31 45%, #362e26 100%);
@@ -420,7 +449,6 @@
             border: 1px solid #26201a;
         }
 
-        /* 木框內側凹槽陰影 */
         .board-recess {
             padding: 3px;
             background: #24201c;
@@ -434,29 +462,24 @@
             width: 100%;
             background-color: var(--grid-line);
             border: 1px solid var(--grid-line);
-            touch-action: none;
+            touch-action: none; /* 鎖定棋盤區域內手勢，防止畫面捲動 */
+            cursor: crosshair;
         }
 
-        /* 單一石板格子 */
         .cell {
             position: relative;
             aspect-ratio: 1;
             background-color: var(--stone-tile);
-            /* 石板微立體浮雕與極細網格線 */
             border-right: 1px solid var(--grid-line);
             border-bottom: 1px solid var(--grid-line);
             box-shadow: inset 1px 1px 0 rgba(255,255,255,0.22);
-            pointer-events: none;
         }
 
-        /* 特殊格 1：花崗岩死地石頭 */
+        /* 花崗岩死地石頭 */
         .stone {
             background-color: #57534e;
-            background-image: 
-                radial-gradient(circle at 30% 30%, #78716c 0%, #44403c 70%, #292524 100%);
-            box-shadow: 
-                inset 1.5px 1.5px 2px rgba(255,255,255,0.25),
-                inset -2px -2px 3px rgba(0,0,0,0.7);
+            background-image: radial-gradient(circle at 30% 30%, #78716c 0%, #44403c 70%, #292524 100%);
+            box-shadow: inset 1.5px 1.5px 2px rgba(255,255,255,0.25), inset -2px -2px 3px rgba(0,0,0,0.7);
         }
         .stone::after {
             content: '';
@@ -467,7 +490,7 @@
             background: repeating-linear-gradient(45deg, rgba(0,0,0,0.18) 0 2px, transparent 2px 4px);
         }
 
-        /* 特殊格 2：節目同款白底方形功能格（搶奪卡） */
+        /* 搶奪卡 */
         .steal-card {
             background: radial-gradient(circle at center, #ffffff 45%, #e5e7eb 100%);
             box-shadow: inset 0 0 0 1.5px #9ca3af;
@@ -484,38 +507,31 @@
             font-weight: 900;
         }
 
-        /* =========================================================
-           擬真人工草皮拼圖樣式 (保留節目全綠質感 + 4玩家邊框區分)
-           ========================================================= */
+        /* 擬真人工草皮拼圖 */
         .placed {
             z-index: 2;
-            /* 擬真人工草坪顆粒紋理 */
             background-color: #2d8a49;
             background-image: 
                 radial-gradient(rgba(255,255,255,0.16) 1px, transparent 0),
                 radial-gradient(rgba(10, 35, 16, 0.26) 1px, transparent 0);
             background-size: 4px 4px;
             background-position: 0 0, 2px 2px;
-            /* 預設內部草皮拼縫 */
             border-right: 1px solid rgba(12, 36, 18, 0.32);
             border-bottom: 1px solid rgba(12, 36, 18, 0.32);
             box-shadow: none;
         }
         .placed::after { content: none; }
 
-        /* 4位玩家草皮色調微差與陣營色標 */
-        .placed-p0 { background-color: #268259; } /* 翠藍綠草皮 */
-        .placed-p1 { background-color: #3a8f3d; } /* 暖陽綠草皮 */
-        .placed-p2 { background-color: #277d42; } /* 濃郁森綠草皮 */
-        .placed-p3 { background-color: #2c7a63; } /* 蒼苔青綠草皮 */
+        .placed-p0 { background-color: #268259; }
+        .placed-p1 { background-color: #3a8f3d; }
+        .placed-p2 { background-color: #277d42; }
+        .placed-p3 { background-color: #2c7a63; }
 
-        /* 拼圖外輪廓實體裁切邊 (由 JS 根據 pieceId 動態標記) */
         .edge-top    { border-top: 2px solid #102415 !important; }
         .edge-right  { border-right: 2px solid #102415 !important; }
         .edge-bottom { border-bottom: 2px solid #102415 !important; }
         .edge-left   { border-left: 2px solid #102415 !important; }
 
-        /* 每片草皮錨點上的迷你玩家色標圓點，確保 100% 清晰辨識歸屬 */
         .piece-anchor::before {
             content: '';
             position: absolute;
@@ -532,19 +548,18 @@
         .placed-p2.piece-anchor::before { background: var(--p2-color); }
         .placed-p3.piece-anchor::before { background: var(--p3-color); }
 
-        /* 放置預覽狀態 */
-        .preview-valid-p0 { background: rgba(59, 130, 246, 0.65) !important; box-shadow: inset 0 0 0 1.5px #93c5fd; z-index: 5; }
-        .preview-valid-p1 { background: rgba(245, 158, 11, 0.65) !important; box-shadow: inset 0 0 0 1.5px #fcd34d; z-index: 5; }
-        .preview-valid-p2 { background: rgba(239, 68, 68, 0.65) !important; box-shadow: inset 0 0 0 1.5px #fca5a5; z-index: 5; }
-        .preview-valid-p3 { background: rgba(168, 85, 247, 0.65) !important; box-shadow: inset 0 0 0 1.5px #d8b4fe; z-index: 5; }
+        /* 放置預覽 */
+        .preview-valid-p0 { background: rgba(59, 130, 246, 0.72) !important; box-shadow: inset 0 0 0 1.5px #bfdbfe; z-index: 5; }
+        .preview-valid-p1 { background: rgba(245, 158, 11, 0.72) !important; box-shadow: inset 0 0 0 1.5px #fef08a; z-index: 5; }
+        .preview-valid-p2 { background: rgba(239, 68, 68, 0.72) !important; box-shadow: inset 0 0 0 1.5px #fecaca; z-index: 5; }
+        .preview-valid-p3 { background: rgba(168, 85, 247, 0.72) !important; box-shadow: inset 0 0 0 1.5px #e9d5ff; z-index: 5; }
 
         .preview-invalid {
-            background: rgba(220, 38, 38, 0.72) !important;
+            background: rgba(220, 38, 38, 0.78) !important;
             box-shadow: inset 0 0 0 1.5px #fecaca;
             z-index: 5;
         }
 
-        /* 搶奪目標瞄準高亮 */
         .steal-target-preview {
             outline: 2.5px solid #ef4444;
             outline-offset: -1px;
@@ -553,9 +568,7 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.9);
         }
 
-        /* =========================================================
-           節目同款：5x5 達成螢光萊姆綠外框 & 切角廣播徽章
-           ========================================================= */
+        /* 5x5 達成霓虹萊姆綠外框 */
         .glow-top    { border-top: 2.5px solid var(--neon-lime) !important; z-index: 6; }
         .glow-right  { border-right: 2.5px solid var(--neon-lime) !important; z-index: 6; }
         .glow-bottom { border-bottom: 2.5px solid var(--neon-lime) !important; z-index: 6; }
@@ -564,7 +577,6 @@
             box-shadow: inset 0 0 8px rgba(216, 255, 46, 0.38);
         }
 
-        /* 浮動在棋盤 5x5 區域上的廣播級切角徽章 (還原圖1的 6X6 黑底金框牌子) */
         .board-5x5-badge {
             position: absolute;
             transform: translate(-4px, -110%);
@@ -572,7 +584,6 @@
             color: #ffffff;
             font-size: 11px;
             font-weight: 900;
-            letter-spacing: 1px;
             padding: 2px 7px;
             border: 1.5px solid #d4af37;
             clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px);
@@ -582,7 +593,6 @@
             white-space: nowrap;
         }
 
-        /* 頂部廣播通知 Toast */
         #toast {
             position: fixed;
             top: 14px;
@@ -592,7 +602,6 @@
             padding: 8px 18px;
             font-weight: 800;
             font-size: 13px;
-            letter-spacing: 0.5px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.65);
             opacity: 0;
             pointer-events: none;
@@ -607,7 +616,6 @@
             transform: translateY(0);
         }
 
-        /* 彈窗系統 (轉贈調換券 & 最終勝負結算) */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -628,18 +636,8 @@
             text-align: center;
             box-shadow: 0 16px 40px rgba(0,0,0,0.8);
         }
-        .modal-box h3 {
-            margin: 0 0 10px 0;
-            color: #facc15;
-            font-size: 19px;
-            letter-spacing: 1px;
-        }
-        .gift-targets {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin: 14px 0;
-        }
+        .modal-box h3 { margin: 0 0 10px 0; color: #facc15; font-size: 19px; }
+        .gift-targets { display: flex; flex-direction: column; gap: 8px; margin: 14px 0; }
         .gift-target-btn {
             border: 1px solid rgba(255,255,255,0.25);
             padding: 11px;
@@ -725,11 +723,12 @@
         <div class="queue-list" id="queue-list"></div>
     </div>
 
-    <!-- 節目同款八角切角草皮托盤 + 2x2 戰術控制鍵 -->
+    <!-- 可直接拖曳的八角切角草皮托盤 + 2x2 戰術控制鍵 -->
     <div class="controls">
         <div class="tray-outer chamfer-md" id="tray-outer">
             <div class="tray-inner chamfer-md">
                 <div id="mini-preview"></div>
+                <span class="tray-hint">拖曳放置</span>
             </div>
         </div>
         <div class="btn-grid">
@@ -738,6 +737,12 @@
             <button id="btn-swap" class="btn-ticket" onclick="toggleSwapMode()">🎫 調換</button>
             <button id="btn-gift" class="btn-gift" onclick="openGiftModal()">🎁 贈送</button>
         </div>
+    </div>
+
+    <!-- 輕點棋盤釘選預覽時出現的快速確認欄 -->
+    <div id="confirm-bar">
+        <button id="btn-confirm-place" onclick="confirmPinnedPlacement()">✓ 確認放置草皮</button>
+        <button id="btn-cancel-pin" onclick="clearPinnedPreview()">取消</button>
     </div>
 
     <!-- 做舊實木外框 + 20x20 石板草皮棋盤 -->
@@ -774,14 +779,16 @@
         const turnIndicator = document.getElementById('turn-indicator');
         const queueBarElement = document.getElementById('queue-bar');
         const queueListElement = document.getElementById('queue-list');
+        const confirmBarElement = document.getElementById('confirm-bar');
+        const btnConfirmPlace = document.getElementById('btn-confirm-place');
         const toastElement = document.getElementById('toast');
         const rows = 20;
         const cols = 20;
         let cells = []; 
-        let nextPieceUid = 1; // 追蹤每片草皮的獨立實體編號，用於繪製物理邊框
+        let nextPieceUid = 1;
 
         // ==========================================
-        // 內建 Web Audio API 實體桌遊觸控音效
+        // 內建 Web Audio API 實體音效
         // ==========================================
         let soundEnabled = true;
         let audioCtx = null;
@@ -809,7 +816,6 @@
                     osc.start(now);
                     osc.stop(now + 0.05);
                 } else if (type === 'place') {
-                    // 草皮實體按壓進石板格的厚實悶響
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(190, now);
                     osc.frequency.exponentialRampToValueAtTime(75, now + 0.11);
@@ -818,7 +824,6 @@
                     osc.start(now);
                     osc.stop(now + 0.11);
                 } else if (type === 'steal') {
-                    // 搶奪卡觸發警報音
                     osc.type = 'sawtooth';
                     osc.frequency.setValueAtTime(340, now);
                     osc.frequency.linearRampToValueAtTime(620, now + 0.16);
@@ -827,10 +832,9 @@
                     osc.start(now);
                     osc.stop(now + 0.18);
                 } else if (type === 'achieve') {
-                    // 5x5 達成和弦提示
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(587.33, now);       // D5
-                    osc.frequency.setValueAtTime(880, now + 0.09);    // A5
+                    osc.frequency.setValueAtTime(587.33, now);
+                    osc.frequency.setValueAtTime(880, now + 0.09);
                     gain.gain.setValueAtTime(0.18, now);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
                     osc.start(now);
@@ -855,7 +859,9 @@
         let stealCount = 0;
         let isSwapping = false;
 
-        // 四格與五格多連方塊草皮形狀庫
+        // 釘選預覽狀態（支援輕點棋盤先預覽、旋轉微調後再確認放置）
+        let pinnedPreview = null; // { startRow, startCol }
+
         const shapePool = [
             [[1, 1, 1], [0, 1, 0]],             // T4
             [[1, 1, 1, 1]],                     // I4
@@ -895,7 +901,7 @@
         }
 
         // ==========================================
-        // 渲染後續 5 片預告列與更新按鈕狀態
+        // 預告列與按鈕狀態
         // ==========================================
         function renderUpcomingQueue() {
             queueListElement.innerHTML = '';
@@ -972,13 +978,13 @@
                 turnIndicator.textContent = `🎫 請從上方「後續5片」點擊欲替換的草皮`;
                 turnIndicator.classList.add('banner-swap');
             } else {
-                turnIndicator.textContent = `輪到 ${player.name} (${player.colorName})`;
+                turnIndicator.textContent = `輪到 ${player.name} (${player.colorName}) — 拖曳或點擊棋盤`;
                 turnIndicator.classList.add(`banner-p${currentPlayerIndex}`);
             }
         }
 
         // ==========================================
-        // 草皮調換券：使用與轉贈
+        // 草皮調換券
         // ==========================================
         function toggleSwapMode() {
             if (isStealing) return;
@@ -986,6 +992,7 @@
             if (!isSwapping && player.tickets <= 0) return;
 
             playTone('click');
+            clearPinnedPreview();
             isSwapping = !isSwapping;
             renderUpcomingQueue();
             updateControlButtons();
@@ -1061,6 +1068,7 @@
         // ==========================================
         function nextTurn() {
             isSwapping = false;
+            clearPinnedPreview();
             document.getElementById(`card-p${currentPlayerIndex}`).classList.remove('active-turn');
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
             document.getElementById(`card-p${currentPlayerIndex}`).classList.add('active-turn');
@@ -1075,11 +1083,10 @@
         }
 
         // ==========================================
-        // 物理拼圖外框演算法：讓每塊放置的草皮擁有獨立裁切外框
+        // 物理拼圖外框與 5x5 演算法
         // ==========================================
         function updatePieceContours() {
             const seenPieces = new Set();
-
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const cell = cells[r][c];
@@ -1088,13 +1095,10 @@
                     const pid = cell.dataset.pieceId;
                     if (!pid) continue;
 
-                    // 標記每片草皮的第一格為錨點（顯示玩家色點）
                     if (!seenPieces.has(pid)) {
                         seenPieces.add(pid);
                         cell.classList.add('piece-anchor');
                     }
-
-                    // 比對上下左右鄰居是否屬於同一片草皮
                     if (r === 0 || cells[r - 1][c].dataset.pieceId !== pid) cell.classList.add('edge-top');
                     if (c === cols - 1 || cells[r][c + 1].dataset.pieceId !== pid) cell.classList.add('edge-right');
                     if (r === rows - 1 || cells[r + 1][c].dataset.pieceId !== pid) cell.classList.add('edge-bottom');
@@ -1103,13 +1107,9 @@
             }
         }
 
-        // ==========================================
-        // 核心演算法：5x5 領地偵測 + 連續霓虹萊姆綠外框 & 徽章
-        // ==========================================
         function evaluateBoardState() {
             updatePieceContours();
 
-            // 清除舊的 5x5 發光樣式與浮動徽章
             document.querySelectorAll('.board-5x5-badge').forEach(el => el.remove());
             const owner5x5Map = Array.from({ length: rows }, () => Array(cols).fill(-1));
 
@@ -1123,7 +1123,7 @@
                 const pClass = `placed-p${player.id}`;
                 let totalTiles = 0;
                 let found5x5 = false;
-                let badgeAnchor = null; // 記錄該玩家第一個 5x5 的左上角座標
+                let badgeAnchor = null;
 
                 const dp = Array.from({ length: rows }, () => Array(cols).fill(0));
 
@@ -1139,9 +1139,7 @@
 
                             if (dp[r][c] >= 5) {
                                 found5x5 = true;
-                                if (!badgeAnchor) {
-                                    badgeAnchor = { r: r - 4, c: c - 4 };
-                                }
+                                if (!badgeAnchor) badgeAnchor = { r: r - 4, c: c - 4 };
                                 for (let rr = r - 4; rr <= r; rr++) {
                                     for (let cc = c - 4; cc <= c; cc++) {
                                         owner5x5Map[rr][cc] = player.id;
@@ -1153,7 +1151,6 @@
                     }
                 }
 
-                // 繪製連續霓虹萊姆綠外框（僅在外圍描邊，不畫內部格線）
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
                         if (owner5x5Map[r][c] === player.id) {
@@ -1165,13 +1162,11 @@
                     }
                 }
 
-                // 在達成的 5x5 領地邊緣掛上節目同款切角廣播徽章
                 if (badgeAnchor) {
                     const badgeEl = document.createElement('div');
                     badgeEl.className = 'board-5x5-badge';
                     badgeEl.style.borderColor = player.cssColor;
                     badgeEl.textContent = `P${player.id + 1} · 5×5`;
-                    // 若太靠近頂部邊界，改為顯示在格子內側以免被木框裁切
                     if (badgeAnchor.r === 0) {
                         badgeEl.style.transform = 'translate(2px, 2px)';
                     }
@@ -1202,9 +1197,6 @@
             });
         }
 
-        // ==========================================
-        // 最終勝負結算與重置
-        // ==========================================
         function endGame() {
             if (isStealing) {
                 showToast('請先完成當前的搶奪行動！');
@@ -1250,6 +1242,7 @@
             isStealing = false;
             stealCount = 0;
             isSwapping = false;
+            clearPinnedPreview();
 
             players.forEach((p, idx) => {
                 p.has5x5 = false;
@@ -1285,6 +1278,7 @@
             }
             currentShape = newShape;
             updateMiniPreview();
+            refreshPinnedPreview();
         }
 
         function flipShape() {
@@ -1294,6 +1288,7 @@
                 currentShape[r].reverse();
             }
             updateMiniPreview();
+            refreshPinnedPreview();
         }
 
         function updateMiniPreview() {
@@ -1301,9 +1296,7 @@
             const rLen = currentShape.length;
             const cLen = currentShape[0].length;
             
-            // 托盤外框微光套用當前玩家識別色
             trayOuterElement.style.background = players[currentPlayerIndex].cssColor;
-
             miniPreviewElement.style.gridTemplateColumns = `repeat(${cLen}, 12px)`;
             miniPreviewElement.style.gridTemplateRows = `repeat(${rLen}, 12px)`;
 
@@ -1348,89 +1341,56 @@
             }
         }
 
-        // --- 觸控 & 滑鼠雙模操作 ---
-        let previewRow = -1;
-        let previewCol = -1;
-        let currentTargetCell = null;
-        let isPointerDown = false;
+        // ==========================================
+        // 全新數學座標映射與手機多手勢操控引擎
+        // ==========================================
+        let activeDragSource = null; // 'tray' | 'board' | null
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let hasMovedSignificantly = false;
+        let lastPreviewStart = null; // { startRow, startCol }
 
-        function handlePointerMove(clientX, clientY) {
-            if (isSwapping) return;
-            const target = document.elementFromPoint(clientX, clientY);
+        // 直接根據棋盤矩形邊界計算指尖對應的格子座標（不依賴 DOM elementFromPoint）
+        function getCellCoordFromClient(clientX, clientY, verticalLiftCells = 0) {
+            const rect = boardElement.getBoundingClientRect();
+            const cellSize = rect.width / cols;
+            const adjustedY = clientY - verticalLiftCells * cellSize;
 
-            if (target && target.classList.contains('cell')) {
-                if (target !== currentTargetCell) {
-                    currentTargetCell = target;
-                    previewRow = parseInt(target.dataset.row);
-                    previewCol = parseInt(target.dataset.col);
+            if (clientX < rect.left || clientX > rect.right || adjustedY < rect.top || adjustedY > rect.bottom) {
+                return null;
+            }
+            const col = Math.min(cols - 1, Math.max(0, Math.floor((clientX - rect.left) / cellSize)));
+            const row = Math.min(rows - 1, Math.max(0, Math.floor((adjustedY - rect.top) / cellSize)));
+            return { row, col };
+        }
 
-                    if (isStealing) {
-                        clearPreview();
-                        if (currentTargetCell.classList.contains('placed') && !currentTargetCell.classList.contains(`placed-p${currentPlayerIndex}`)) {
-                            currentTargetCell.classList.add('steal-target-preview');
+        // 計算以指尖為中心的草皮左上角錨點，並自動夾在棋盤邊界內方便瞄準
+        function getCenteredShapeOrigin(centerRow, centerCol) {
+            const h = currentShape.length;
+            const w = currentShape[0].length;
+            let startRow = centerRow - Math.floor(h / 2);
+            let startCol = centerCol - Math.floor(w / 2);
+            startRow = Math.max(0, Math.min(rows - h, startRow));
+            startCol = Math.max(0, Math.min(cols - w, startCol));
+            return { startRow, startCol };
+        }
+
+        function isPlacementValid(startRow, startCol) {
+            for (let r = 0; r < currentShape.length; r++) {
+                for (let c = 0; c < currentShape[r].length; c++) {
+                    if (currentShape[r][c] === 1) {
+                        const tr = startRow + r;
+                        const tc = startCol + c;
+                        if (tr < 0 || tr >= rows || tc < 0 || tc >= cols ||
+                            cells[tr][tc].classList.contains('placed') ||
+                            cells[tr][tc].classList.contains('stone')) {
+                            return false;
                         }
-                    } else {
-                        drawPreview(previewRow, previewCol);
                     }
                 }
-            } else {
-                clearPreview();
-                currentTargetCell = null;
-                previewRow = -1;
-                previewCol = -1;
             }
+            return true;
         }
-
-        function handlePointerRelease() {
-            if (isSwapping) return;
-
-            if (isStealing) {
-                if (currentTargetCell) {
-                    executeSteal(currentTargetCell);
-                }
-                clearPreview();
-            } else {
-                if (previewRow !== -1 && previewCol !== -1) {
-                    placeShape(previewRow, previewCol);
-                }
-                clearPreview();
-            }
-            currentTargetCell = null;
-            previewRow = -1;
-            previewCol = -1;
-        }
-
-        // iOS / iPadOS 觸控事件
-        boardElement.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            handlePointerMove(touch.clientX, touch.clientY);
-        }, { passive: false });
-
-        boardElement.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            handlePointerMove(touch.clientX, touch.clientY);
-        }, { passive: false });
-
-        boardElement.addEventListener('touchend', (e) => {
-            handlePointerRelease();
-        });
-
-        // 桌面端滑鼠支援
-        boardElement.addEventListener('mousedown', (e) => {
-            isPointerDown = true;
-            handlePointerMove(e.clientX, e.clientY);
-        });
-        window.addEventListener('mousemove', (e) => {
-            if (!isPointerDown) return;
-            handlePointerMove(e.clientX, e.clientY);
-        });
-        window.addEventListener('mouseup', () => {
-            if (!isPointerDown) return;
-            isPointerDown = false;
-            handlePointerRelease();
-        });
 
         function clearPreview() {
             const previewClasses = ['preview-invalid', 'preview-valid-p0', 'preview-valid-p1', 'preview-valid-p2', 'preview-valid-p3', 'steal-target-preview'];
@@ -1443,34 +1403,229 @@
 
         function drawPreview(startRow, startCol) {
             clearPreview();
-            let isValid = true;
+            const isValid = isPlacementValid(startRow, startCol);
+            const validClass = `preview-valid-p${currentPlayerIndex}`;
+
             for (let r = 0; r < currentShape.length; r++) {
                 for (let c = 0; c < currentShape[r].length; c++) {
                     if (currentShape[r][c] === 1) {
                         const tr = startRow + r;
                         const tc = startCol + c;
-                        if (tr >= rows || tc >= cols || 
-                            cells[tr][tc].classList.contains('placed') || 
-                            cells[tr][tc].classList.contains('stone')) {
-                            isValid = false; 
+                        if (tr >= 0 && tr < rows && tc >= 0 && tc < cols && !cells[tr][tc].classList.contains('placed')) {
+                            cells[tr][tc].classList.add(isValid ? validClass : 'preview-invalid');
                         }
                     }
                 }
             }
-            const validClass = `preview-valid-p${currentPlayerIndex}`;
-            for (let r = 0; r < currentShape.length; r++) {
-                for (let c = 0; c < currentShape[r].length; c++) {
-                    if (currentShape[r][c] === 1) {
-                        const tr = startRow + r;
-                        const tc = startCol + c;
-                        if (tr < rows && tc < cols && !cells[tr][tc].classList.contains('placed')) {
-                             cells[tr][tc].classList.add(isValid ? validClass : 'preview-invalid');
+            return isValid;
+        }
+
+        // 釘選預覽控制（輕點棋盤後顯示確認按鈕）
+        function setPinnedPreview(startRow, startCol) {
+            pinnedPreview = { startRow, startCol };
+            const valid = drawPreview(startRow, startCol);
+            confirmBarElement.classList.add('visible');
+            btnConfirmPlace.disabled = !valid;
+            btnConfirmPlace.textContent = valid ? '✓ 確認放置草皮' : '✕ 此位置無法放置';
+        }
+
+        function refreshPinnedPreview() {
+            if (!pinnedPreview) return;
+            const { startRow, startCol } = getCenteredShapeOrigin(
+                pinnedPreview.startRow + Math.floor(currentShape.length / 2),
+                pinnedPreview.startCol + Math.floor(currentShape[0].length / 2)
+            );
+            setPinnedPreview(startRow, startCol);
+        }
+
+        function clearPinnedPreview() {
+            pinnedPreview = null;
+            confirmBarElement.classList.remove('visible');
+            clearPreview();
+        }
+
+        function confirmPinnedPlacement() {
+            if (!pinnedPreview) return;
+            const { startRow, startCol } = pinnedPreview;
+            if (isPlacementValid(startRow, startCol)) {
+                clearPinnedPreview();
+                placeShape(startRow, startCol);
+            }
+        }
+
+        // 統一處理按下 (Touch / Mouse)
+        function onInteractionStart(source, clientX, clientY, isTouch) {
+            if (isSwapping) return;
+            activeDragSource = source;
+            touchStartX = clientX;
+            touchStartY = clientY;
+            hasMovedSignificantly = false;
+            lastPreviewStart = null;
+
+            const lift = isTouch ? (source === 'tray' ? 1.8 : 1.0) : 0;
+            const coord = getCellCoordFromClient(clientX, clientY, lift);
+
+            if (isStealing) {
+                clearPreview();
+                if (coord) {
+                    const cell = cells[coord.row][coord.col];
+                    if (cell.classList.contains('placed') && !cell.classList.contains(`placed-p${currentPlayerIndex}`)) {
+                        cell.classList.add('steal-target-preview');
+                    }
+                }
+                return;
+            }
+
+            if (coord) {
+                const origin = getCenteredShapeOrigin(coord.row, coord.col);
+                lastPreviewStart = origin;
+                drawPreview(origin.startRow, origin.startCol);
+            }
+        }
+
+        // 統一處理滑動 (Touch / Mouse)
+        function onInteractionMove(clientX, clientY, isTouch) {
+            if (!activeDragSource || isSwapping) return;
+
+            if (Math.hypot(clientX - touchStartX, clientY - touchStartY) > 10) {
+                hasMovedSignificantly = true;
+                // 一旦開始拖曳，自動解除舊的釘選狀態
+                if (pinnedPreview) {
+                    pinnedPreview = null;
+                    confirmBarElement.classList.remove('visible');
+                }
+            }
+
+            const lift = isTouch ? (activeDragSource === 'tray' ? 1.8 : 1.0) : 0;
+            const coord = getCellCoordFromClient(clientX, clientY, lift);
+
+            if (isStealing) {
+                clearPreview();
+                if (coord) {
+                    const cell = cells[coord.row][coord.col];
+                    if (cell.classList.contains('placed') && !cell.classList.contains(`placed-p${currentPlayerIndex}`)) {
+                        cell.classList.add('steal-target-preview');
+                    }
+                }
+                return;
+            }
+
+            if (coord) {
+                const origin = getCenteredShapeOrigin(coord.row, coord.col);
+                lastPreviewStart = origin;
+                drawPreview(origin.startRow, origin.startCol);
+            } else {
+                lastPreviewStart = null;
+                clearPreview();
+            }
+        }
+
+        // 統一處理放開 (Touch / Mouse)
+        function onInteractionEnd(clientX, clientY, isTouch) {
+            if (!activeDragSource || isSwapping) return;
+            const source = activeDragSource;
+            activeDragSource = null;
+
+            const lift = isTouch ? (source === 'tray' ? 1.8 : 1.0) : 0;
+            const coord = getCellCoordFromClient(clientX, clientY, lift);
+
+            // 搶奪模式
+            if (isStealing) {
+                clearPreview();
+                if (coord) {
+                    executeSteal(cells[coord.row][coord.col]);
+                }
+                return;
+            }
+
+            // 情況 1：從草皮托盤拖曳出來
+            if (source === 'tray') {
+                if (!hasMovedSignificantly) {
+                    // 輕點托盤 -> 順時針旋轉草皮（超方便的單手快捷操作！）
+                    rotateShape();
+                    return;
+                }
+                if (lastPreviewStart && isPlacementValid(lastPreviewStart.startRow, lastPreviewStart.startCol)) {
+                    clearPinnedPreview();
+                    placeShape(lastPreviewStart.startRow, lastPreviewStart.startCol);
+                } else {
+                    clearPreview();
+                }
+                return;
+            }
+
+            // 情況 2：在棋盤上操作
+            if (source === 'board') {
+                if (hasMovedSignificantly) {
+                    // 手指在棋盤上滑動後放開 -> 若位置合法則直接放置
+                    if (lastPreviewStart && isPlacementValid(lastPreviewStart.startRow, lastPreviewStart.startCol)) {
+                        clearPinnedPreview();
+                        placeShape(lastPreviewStart.startRow, lastPreviewStart.startCol);
+                    } else if (lastPreviewStart) {
+                        setPinnedPreview(lastPreviewStart.startRow, lastPreviewStart.startCol);
+                    } else {
+                        clearPreview();
+                    }
+                } else if (coord) {
+                    // 單純輕點棋盤某一格：
+                    // 若已經釘選在同一位置且位置合法 -> 直接放置！否則釘選該位置供微調確認
+                    const origin = getCenteredShapeOrigin(coord.row, coord.col);
+                    if (pinnedPreview && pinnedPreview.startRow === origin.startRow && pinnedPreview.startCol === origin.startCol) {
+                        if (isPlacementValid(origin.startRow, origin.startCol)) {
+                            clearPinnedPreview();
+                            placeShape(origin.startRow, origin.startCol);
                         }
+                    } else {
+                        playTone('click');
+                        setPinnedPreview(origin.startRow, origin.startCol);
                     }
                 }
             }
         }
 
+        // 綁定觸控事件（托盤 + 棋盤皆可啟動）
+        trayOuterElement.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const t = e.touches[0];
+            onInteractionStart('tray', t.clientX, t.clientY, true);
+        }, { passive: false });
+
+        boardElement.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const t = e.touches[0];
+            onInteractionStart('board', t.clientX, t.clientY, true);
+        }, { passive: false });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!activeDragSource) return;
+            e.preventDefault();
+            const t = e.touches[0];
+            onInteractionMove(t.clientX, t.clientY, true);
+        }, { passive: false });
+
+        window.addEventListener('touchend', (e) => {
+            if (!activeDragSource) return;
+            const t = e.changedTouches[0];
+            onInteractionEnd(t.clientX, t.clientY, true);
+        });
+
+        // 綁定桌面滑鼠事件
+        trayOuterElement.addEventListener('mousedown', (e) => {
+            onInteractionStart('tray', e.clientX, e.clientY, false);
+        });
+        boardElement.addEventListener('mousedown', (e) => {
+            onInteractionStart('board', e.clientX, e.clientY, false);
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!activeDragSource) return;
+            onInteractionMove(e.clientX, e.clientY, false);
+        });
+        window.addEventListener('mouseup', (e) => {
+            if (!activeDragSource) return;
+            onInteractionEnd(e.clientX, e.clientY, false);
+        });
+
+        // --- 搶奪與放置結算 ---
         function countStealableTargets() {
             let count = 0;
             for (let r = 0; r < rows; r++) {
@@ -1490,7 +1645,6 @@
                     targetCell.classList.remove(`placed-p${i}`);
                 }
                 targetCell.classList.add(`placed-p${currentPlayerIndex}`);
-                // 被搶奪的單格草皮獨立成為新的物理小拼圖塊
                 targetCell.dataset.pieceId = `stolen-${nextPieceUid++}`;
                 
                 targetCell.style.transform = 'scale(1.25)';
@@ -1508,60 +1662,44 @@
         }
 
         function placeShape(startRow, startCol) {
-            let isValid = true;
-            let stealCardsTriggered = 0; 
+            if (!isPlacementValid(startRow, startCol)) return;
+
+            let stealCardsTriggered = 0;
+            const thisPieceId = `piece-${nextPieceUid++}`;
 
             for (let r = 0; r < currentShape.length; r++) {
                 for (let c = 0; c < currentShape[r].length; c++) {
                     if (currentShape[r][c] === 1) {
-                        const tr = startRow + r;
-                        const tc = startCol + c;
-                        if (tr >= rows || tc >= cols || 
-                            cells[tr][tc].classList.contains('placed') || 
-                            cells[tr][tc].classList.contains('stone')) {
-                            isValid = false;
+                        const targetCell = cells[startRow + r][startCol + c];
+                        if (targetCell.classList.contains('steal-card')) {
+                            stealCardsTriggered++;
+                            targetCell.classList.remove('steal-card'); 
                         }
+                        targetCell.classList.add('placed', `placed-p${currentPlayerIndex}`);
+                        targetCell.dataset.pieceId = thisPieceId;
                     }
                 }
             }
 
-            if (isValid) {
-                const thisPieceId = `piece-${nextPieceUid++}`;
-
-                for (let r = 0; r < currentShape.length; r++) {
-                    for (let c = 0; c < currentShape[r].length; c++) {
-                        if (currentShape[r][c] === 1) {
-                            const targetCell = cells[startRow + r][startCol + c];
-                            if (targetCell.classList.contains('steal-card')) {
-                                stealCardsTriggered++;
-                                targetCell.classList.remove('steal-card'); 
-                            }
-                            targetCell.classList.add('placed', `placed-p${currentPlayerIndex}`);
-                            targetCell.dataset.pieceId = thisPieceId;
-                        }
-                    }
-                }
-
-                playTone('place');
-                evaluateBoardState();
+            playTone('place');
+            evaluateBoardState();
+            
+            if (stealCardsTriggered > 0) {
+                let possibleTargets = countStealableTargets();
+                stealCount = Math.min(stealCardsTriggered, possibleTargets);
                 
-                if (stealCardsTriggered > 0) {
-                    let possibleTargets = countStealableTargets();
-                    stealCount = Math.min(stealCardsTriggered, possibleTargets);
-                    
-                    if (stealCount > 0) {
-                        playTone('steal');
-                        isStealing = true;
-                        trayOuterElement.style.opacity = 0.25;
-                        updateTurnBanner();
-                        updateControlButtons();
-                    } else {
-                        showToast("覆蓋了搶奪卡，但場上沒有對手草皮可搶！");
-                        nextTurn();
-                    }
+                if (stealCount > 0) {
+                    playTone('steal');
+                    isStealing = true;
+                    trayOuterElement.style.opacity = 0.25;
+                    updateTurnBanner();
+                    updateControlButtons();
                 } else {
+                    showToast("覆蓋了搶奪卡，但場上沒有對手草皮可搶！");
                     nextTurn();
                 }
+            } else {
+                nextTurn();
             }
         }
 
