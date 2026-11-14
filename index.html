@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>鋪草皮遊戲 - 完整規則版</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #2c3e50;
+            color: white;
+            margin: 0;
+            padding: 10px 8px 20px 8px;
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        /* 頂部標題與結算列 */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 95vw;
+            max-width: 600px;
+            margin-bottom: 8px;
+        }
+        .header-bar h2 { margin: 0; font-size: 20px; }
+        .btn-end {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            font-size: 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        /* 4人即時記分板（含 5x5 狀態與調換券數量） */
+        #scoreboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            width: 95vw;
+            max-width: 600px;
+            margin-bottom: 8px;
+        }
+        .score-card {
+            background-color: #34495e;
+            border-radius: 6px;
+            padding: 6px 3px;
+            text-align: center;
+            font-size: 11px;
+            border-top: 4px solid transparent;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .score-card.active-turn {
+            background-color: #3d566e;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+        }
+        .score-card.p0 { border-top-color: #3498db; }
+        .score-card.p1 { border-top-color: #e67e22; }
+        .score-card.p2 { border-top-color: #2ecc71; }
+        .score-card.p3 { border-top-color: #9b59b6; }
+
+        .score-name { font-weight: bold; font-size: 12px; margin-bottom: 2px; }
+        .score-meta { color: #ecf0f1; font-size: 11px; margin-bottom: 3px; }
+        .ticket-count { color: #f1c40f; font-weight: bold; }
+        .score-badge {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            background-color: #2c3e50;
+            color: #95a5a6;
+        }
+        .score-badge.qualified {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+        
+        /* 回合指示器 */
+        #turn-indicator {
+            width: 95vw;
+            max-width: 600px;
+            padding: 7px 10px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        /* 玩家顏色主題 */
+        .theme-p0 { background-color: #3498db; color: white; }
+        .preview-valid-p0 { background-color: #3498db; opacity: 0.8; }
+        .placed-p0 { background-color: #2980b9; border: 1px solid #3498db; }
+
+        .theme-p1 { background-color: #e67e22; color: white; }
+        .preview-valid-p1 { background-color: #e67e22; opacity: 0.8; }
+        .placed-p1 { background-color: #d35400; border: 1px solid #e67e22; }
+
+        .theme-p2 { background-color: #2ecc71; color: white; }
+        .preview-valid-p2 { background-color: #2ecc71; opacity: 0.8; }
+        .placed-p2 { background-color: #27ae60; border: 1px solid #2ecc71; }
+
+        .theme-p3 { background-color: #9b59b6; color: white; }
+        .preview-valid-p3 { background-color: #9b59b6; opacity: 0.8; }
+        .placed-p3 { background-color: #8e44ad; border: 1px solid #9b59b6; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.72; }
+            100% { opacity: 1; }
+        }
+        .theme-steal { 
+            background-color: #e74c3c; 
+            color: white; 
+            animation: pulse 1s infinite; 
+        }
+        .theme-swap {
+            background-color: #f39c12;
+            color: #2c3e50;
+            animation: pulse 1.2s infinite;
+        }
+
+        /* 後續 5 片草皮預告列 */
+        .queue-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            width: 95vw;
+            max-width: 600px;
+            background-color: #34495e;
+            padding: 6px 8px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+            border: 2px solid transparent;
+            transition: border-color 0.25s, background-color 0.25s;
+        }
+        .queue-bar.swap-active {
+            border-color: #f1c40f;
+            background-color: #3e5871;
+        }
+        .queue-label {
+            font-size: 11px;
+            color: #bdc3c7;
+            font-weight: bold;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+        .queue-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            flex: 1;
+        }
+        .queue-item {
+            position: relative;
+            background-color: #2c3e50;
+            border: 1px solid #46627f;
+            border-radius: 6px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2px;
+            cursor: default;
+            touch-action: manipulation;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .queue-bar.swap-active .queue-item {
+            cursor: pointer;
+            border: 2px dashed #f1c40f;
+            background-color: #243342;
+        }
+        .queue-bar.swap-active .queue-item:active {
+            transform: scale(0.94);
+            background-color: #f1c40f;
+        }
+        .queue-num {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 9px;
+            color: #95a5a6;
+            font-weight: bold;
+        }
+        .queue-grid {
+            display: grid;
+            gap: 1px;
+        }
+        .q-cell {
+            width: 6px;
+            height: 6px;
+            background-color: transparent;
+        }
+        .q-cell.filled {
+            background-color: #ecf0f1;
+            border-radius: 1px;
+        }
+
+        /* 特殊格樣式 */
+        .stone {
+            background-color: #7f8c8d;
+            background-image: radial-gradient(#95a5a6 15%, transparent 16%), radial-gradient(#95a5a6 15%, transparent 16%);
+            background-size: 10px 10px;
+            background-position: 0 0, 5px 5px;
+            border: 1px solid #34495e;
+        }
+        .steal-card {
+            background-color: #f1c40f;
+            position: relative;
+        }
+        .steal-card::after {
+            content: '⚔️';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+        }
+
+        /* 控制區：當前草皮 + 2x2 觸控按鍵 */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            width: 95vw;
+            max-width: 600px;
+            margin-bottom: 8px;
+            background-color: #34495e;
+            padding: 8px 10px;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        #mini-preview {
+            display: grid;
+            gap: 2px;
+            background-color: #2c3e50;
+            padding: 4px;
+            border-radius: 6px;
+            width: 64px;
+            height: 64px;
+            flex-shrink: 0;
+            justify-content: center;
+            align-content: center;
+            transition: opacity 0.3s;
+        }
+        .mini-cell { width: 11px; height: 11px; background-color: transparent; }
+        
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            flex: 1;
+        }
+        .btn-grid button {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            border: none;
+            padding: 9px 6px;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            touch-action: manipulation;
+            transition: opacity 0.2s, background-color 0.2s;
+        }
+        .btn-grid button:active:not(:disabled) { background-color: #bdc3c7; }
+        .btn-grid button:disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+        }
+        .btn-grid button.btn-ticket {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+        .btn-grid button.btn-ticket.canceling {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-grid button.btn-gift {
+            background-color: #1abc9c;
+            color: white;
+        }
+
+        /* 20x20 棋盤 */
+        #board {
+            display: grid;
+            grid-template-columns: repeat(20, 1fr); 
+            width: 95vw;
+            max-width: 600px;
+            gap: 1px;
+            background-color: #34495e;
+            border: 2px solid #ecf0f1;
+            padding: 2px;
+            touch-action: none; 
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background-color: #ecf0f1;
+            pointer-events: none; 
+            box-sizing: border-box;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .preview-invalid { background-color: #e74c3c !important; opacity: 0.8; }
+        
+        .steal-target-preview {
+            border: 2px solid #e74c3c !important;
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .placed { z-index: 2; }
+        .placed::after { content: none; }
+
+        .in-5x5 {
+            box-shadow: inset 0 0 0 2px #f1c40f;
+        }
+
+        /* 浮動提示訊息 (Toast) */
+        #toast {
+            position: fixed;
+            top: 18px;
+            background-color: rgba(241, 196, 15, 0.96);
+            color: #2c3e50;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s;
+            transform: translateY(-10px);
+            z-index: 150;
+            max-width: 88vw;
+            text-align: center;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 通用彈窗 (贈送調換券 & 最終結算) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.75);
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 20px;
+        }
+        .modal-box {
+            background-color: #34495e;
+            border: 2px solid #f1c40f;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+        }
+        .modal-box h3 { margin-top: 0; color: #f1c40f; font-size: 20px; }
+        .gift-targets {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .gift-target-btn {
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .btn-cancel-modal {
+            width: 100%;
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .result-list {
+            text-align: left;
+            margin: 15px 0;
+            background-color: #2c3e50;
+            padding: 12px;
+            border-radius: 8px;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        .winner-banner {
+            font-size: 17px;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast"></div>
+
+    <div class="header-bar">
+        <h2>鋪草皮遊戲</h2>
+        <button class="btn-end" onclick="endGame()">結算勝負</button>
+    </div>
+
+    <!-- 4人即時記分板 -->
+    <div id="scoreboard">
+        <div class="score-card p0 active-turn" id="card-p0">
+            <div class="score-name">玩家 1 (藍)</div>
+            <div class="score-meta"><span id="tiles-p0">0格</span> ｜ <span class="ticket-count" id="tickets-p0">🎫×1</span></div>
+            <div class="score-badge" id="badge-p0">未達 5×5</div>
+        </div>
+        <div class="score-card p1" id="card-p1">
+            <div class="score-name">玩家 2 (橘)</div>
+            <div class="score-meta"><span id="tiles-p1">0格</span> ｜ <span class="ticket-count" id="tickets-p1">🎫×1</span></div>
+            <div class="score-badge" id="badge-p1">未達 5×5</div>
+        </div>
+        <div class="score-card p2" id="card-p2">
+            <div class="score-name">玩家 3 (綠)</div>
+            <div class="score-meta"><span id="tiles-p2">0格</span> ｜ <span class="ticket-count" id="tickets-p2">🎫×1</span></div>
+            <div class="score-badge" id="badge-p2">未達 5×5</div>
+        </div>
+        <div class="score-card p3" id="card-p3">
+            <div class="score-name">玩家 4 (紫)</div>
+            <div class="score-meta"><span id="tiles-p3">0格</span> ｜ <span class="ticket-count" id="tickets-p3">🎫×1</span></div>
+            <div class="score-badge" id="badge-p3">未達 5×5</div>
+        </div>
+    </div>
+    
+    <div id="turn-indicator" class="theme-p0">輪到 玩家 1 (藍色)</div>
+
+    <!-- 後續 5 片草皮預告列 -->
+    <div class="queue-bar" id="queue-bar">
+        <div class="queue-label">後續5片</div>
+        <div class="queue-list" id="queue-list"></div>
+    </div>
+
+    <!-- 當前草皮預覽與操作控制區 -->
+    <div class="controls">
+        <div id="mini-preview"></div>
+        <div class="btn-grid">
+            <button id="btn-rotate" onclick="rotateShape()">↻ 旋轉</button>
+            <button id="btn-flip" onclick="flipShape()">⇄ 翻轉</button>
+            <button id="btn-swap" class="btn-ticket" onclick="toggleSwapMode()">🎫 調換</button>
+            <button id="btn-gift" class="btn-gift" onclick="openGiftModal()">🎁 贈送</button>
+        </div>
+    </div>
+
+    <div id="board"></div>
+
+    <!-- 贈送調換券彈窗 -->
+    <div class="modal-overlay" id="gift-modal">
+        <div class="modal-box">
+            <h3>🎁 轉贈草皮調換券</h3>
+            <p style="font-size: 14px; color: #bdc3c7; margin: 0;">選擇要將 1 張調換券贈送給哪位玩家：</p>
+            <div class="gift-targets" id="gift-targets"></div>
+            <button class="btn-cancel-modal" onclick="closeGiftModal()">取消</button>
+        </div>
+    </div>
+
+    <!-- 勝負結算視窗 -->
+    <div class="modal-overlay" id="result-modal">
+        <div class="modal-box">
+            <h3>🏆 最終勝負結算</h3>
+            <div class="winner-banner" id="winner-text"></div>
+            <div class="result-list" id="result-details"></div>
+            <button onclick="resetGame()" style="width: 100%; background-color: #2ecc71; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold;">再玩一局</button>
+        </div>
+    </div>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const miniPreviewElement = document.getElementById('mini-preview');
+        const turnIndicator = document.getElementById('turn-indicator');
+        const queueBarElement = document.getElementById('queue-bar');
+        const queueListElement = document.getElementById('queue-list');
+        const toastElement = document.getElementById('toast');
+        const rows = 20;
+        const cols = 20;
+        let cells = []; 
+
+        const players = [
+            { id: 0, name: '玩家 1', colorName: '藍色', has5x5: false, tileCount: 0, tickets: 1 },
+            { id: 1, name: '玩家 2', colorName: '橘色', has5x5: false, tileCount: 0, tickets: 1 },
+            { id: 2, name: '玩家 3', colorName: '綠色', has5x5: false, tileCount: 0, tickets: 1 },
+            { id: 3, name: '玩家 4', colorName: '紫色', has5x5: false, tileCount: 0, tickets: 1 }
+        ];
+        let currentPlayerIndex = 0; 
+        let isStealing = false;
+        let stealCount = 0;
+        let isSwapping = false;
+
+        // 擴充草皮形狀庫（包含經典四格與五格多連方塊，提升策略與調換價值）
+        const shapePool = [
+            [[1, 1, 1], [0, 1, 0]],             // T4
+            [[1, 1, 1, 1]],                     // I4
+            [[1, 1], [1, 1]],                   // O4
+            [[1, 0, 0], [1, 1, 1]],             // L4
+            [[0, 0, 1], [1, 1, 1]],             // J4
+            [[0, 1, 1], [1, 1, 0]],             // S4
+            [[1, 1, 0], [0, 1, 1]],             // Z4
+            [[0, 1, 0], [1, 1, 1], [0, 1, 0]],  // X5 (十字)
+            [[1, 0, 1], [1, 1, 1]],             // U5
+            [[1, 1, 1], [0, 1, 0], [0, 1, 0]],  // T5
+            [[1, 1, 0], [1, 1, 1]],             // P5
+            [[1, 1, 1], [1, 0, 0], [1, 0, 0]],  // V5
+            [[1, 1, 0], [0, 1, 1], [0, 0, 1]]   // W5
+        ];
+
+        let currentShape = [];
+        let upcomingShapes = []; // 固定維持後續 5 片草皮
+
+        function getRandomShape() {
+            const idx = Math.floor(Math.random() * shapePool.length);
+            return JSON.parse(JSON.stringify(shapePool[idx]));
+        }
+
+        function initShapeQueue() {
+            currentShape = getRandomShape();
+            upcomingShapes = [];
+            for (let i = 0; i < 5; i++) {
+                upcomingShapes.push(getRandomShape());
+            }
+        }
+
+        function showToast(msg) {
+            toastElement.textContent = msg;
+            toastElement.classList.add('show');
+            setTimeout(() => toastElement.classList.remove('show'), 2500);
+        }
+
+        // ==========================================
+        // 渲染後續 5 片預告列與更新按鈕狀態
+        // ==========================================
+        function renderUpcomingQueue() {
+            queueListElement.innerHTML = '';
+            queueBarElement.classList.toggle('swap-active', isSwapping);
+
+            upcomingShapes.forEach((shape, idx) => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'queue-item';
+                item.onclick = () => handleQueueItemClick(idx);
+
+                const numBadge = document.createElement('span');
+                numBadge.className = 'queue-num';
+                numBadge.textContent = `#${idx + 1}`;
+                item.appendChild(numBadge);
+
+                const grid = document.createElement('div');
+                grid.className = 'queue-grid';
+                const rLen = shape.length;
+                const cLen = shape[0].length;
+                grid.style.gridTemplateColumns = `repeat(${cLen}, 6px)`;
+                grid.style.gridTemplateRows = `repeat(${rLen}, 6px)`;
+
+                for (let r = 0; r < rLen; r++) {
+                    for (let c = 0; c < cLen; c++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'q-cell';
+                        if (shape[r][c] === 1) cell.classList.add('filled');
+                        grid.appendChild(cell);
+                    }
+                }
+                item.appendChild(grid);
+                queueListElement.appendChild(item);
+            });
+        }
+
+        function updateControlButtons() {
+            const player = players[currentPlayerIndex];
+            const btnRotate = document.getElementById('btn-rotate');
+            const btnFlip = document.getElementById('btn-flip');
+            const btnSwap = document.getElementById('btn-swap');
+            const btnGift = document.getElementById('btn-gift');
+
+            if (isStealing) {
+                btnRotate.disabled = true;
+                btnFlip.disabled = true;
+                btnSwap.disabled = true;
+                btnGift.disabled = true;
+                return;
+            }
+
+            btnRotate.disabled = isSwapping;
+            btnFlip.disabled = isSwapping;
+            btnGift.disabled = isSwapping || player.tickets <= 0;
+
+            if (isSwapping) {
+                btnSwap.disabled = false;
+                btnSwap.textContent = '✕ 取消調換';
+                btnSwap.classList.add('canceling');
+            } else {
+                btnSwap.disabled = player.tickets <= 0;
+                btnSwap.textContent = `🎫 調換 (${player.tickets})`;
+                btnSwap.classList.remove('canceling');
+            }
+        }
+
+        function updateTurnBanner() {
+            const player = players[currentPlayerIndex];
+            if (isStealing) {
+                turnIndicator.textContent = `⚔️ 立即發動搶奪！請點擊對手草皮`;
+                turnIndicator.className = 'theme-steal';
+            } else if (isSwapping) {
+                turnIndicator.textContent = `🎫 請從上方「後續5片」點擊欲替換的草皮`;
+                turnIndicator.className = 'theme-swap';
+            } else {
+                turnIndicator.textContent = `輪到 ${player.name} (${player.colorName})`;
+                turnIndicator.className = `theme-p${currentPlayerIndex}`;
+            }
+        }
+
+        // ==========================================
+        // 草皮調換券：使用與轉贈邏輯
+        // ==========================================
+        function toggleSwapMode() {
+            if (isStealing) return;
+            const player = players[currentPlayerIndex];
+            if (!isSwapping && player.tickets <= 0) return;
+
+            isSwapping = !isSwapping;
+            renderUpcomingQueue();
+            updateControlButtons();
+            updateTurnBanner();
+        }
+
+        function handleQueueItemClick(index) {
+            if (!isSwapping) return;
+
+            const player = players[currentPlayerIndex];
+            if (player.tickets <= 0) return;
+
+            // 消耗 1 張調換券，取出選中的草皮並從後方補齊 1 片
+            player.tickets--;
+            const chosenShape = upcomingShapes.splice(index, 1)[0];
+            upcomingShapes.push(getRandomShape());
+            currentShape = chosenShape;
+
+            isSwapping = false;
+            evaluateBoardState();
+            updateMiniPreview();
+            renderUpcomingQueue();
+            updateControlButtons();
+            updateTurnBanner();
+            showToast(`🎫 ${player.name} 使用調換券換取了第 #${index + 1} 片草皮！`);
+        }
+
+        function openGiftModal() {
+            if (isStealing || isSwapping) return;
+            const sender = players[currentPlayerIndex];
+            if (sender.tickets <= 0) return;
+
+            const targetsContainer = document.getElementById('gift-targets');
+            targetsContainer.innerHTML = '';
+
+            players.forEach(p => {
+                if (p.id !== sender.id) {
+                    const btn = document.createElement('button');
+                    btn.className = `gift-target-btn theme-p${p.id}`;
+                    btn.textContent = `贈送給 ${p.name} (${p.colorName}) — 目前 🎫×${p.tickets}`;
+                    btn.onclick = () => executeGiftTicket(p.id);
+                    targetsContainer.appendChild(btn);
+                }
+            });
+
+            document.getElementById('gift-modal').style.display = 'flex';
+        }
+
+        function closeGiftModal() {
+            document.getElementById('gift-modal').style.display = 'none';
+        }
+
+        function executeGiftTicket(targetPlayerId) {
+            const sender = players[currentPlayerIndex];
+            const receiver = players[targetPlayerId];
+            if (sender.tickets <= 0) return;
+
+            sender.tickets--;
+            receiver.tickets++;
+
+            closeGiftModal();
+            evaluateBoardState();
+            updateControlButtons();
+            showToast(`🎁 ${sender.name} 將調換券贈送給了 ${receiver.name}！`);
+        }
+
+        // ==========================================
+        // 回合推進
+        // ==========================================
+        function nextTurn() {
+            isSwapping = false;
+            document.getElementById(`card-p${currentPlayerIndex}`).classList.remove('active-turn');
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            document.getElementById(`card-p${currentPlayerIndex}`).classList.add('active-turn');
+
+            // 推進預告列：取出 #1 成為當前草皮，後方補 1 片新草皮
+            currentShape = upcomingShapes.shift();
+            upcomingShapes.push(getRandomShape());
+            
+            updateTurnBanner();
+            updateMiniPreview();
+            renderUpcomingQueue();
+            updateControlButtons();
+        }
+
+        // ==========================================
+        // 核心演算法：檢查 5x5 領地與更新記分板
+        // ==========================================
+        function evaluateBoardState() {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    cells[r][c].classList.remove('in-5x5');
+                }
+            }
+
+            players.forEach(player => {
+                const pClass = `placed-p${player.id}`;
+                let totalTiles = 0;
+                let found5x5 = false;
+
+                const dp = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        if (cells[r][c].classList.contains(pClass)) {
+                            totalTiles++;
+
+                            if (r === 0 || c === 0) {
+                                dp[r][c] = 1;
+                            } else {
+                                dp[r][c] = Math.min(
+                                    dp[r - 1][c],
+                                    dp[r][c - 1],
+                                    dp[r - 1][c - 1]
+                                ) + 1;
+                            }
+
+                            if (dp[r][c] >= 5) {
+                                found5x5 = true;
+                                for (let rr = r - 4; rr <= r; rr++) {
+                                    for (let cc = c - 4; cc <= c; cc++) {
+                                        cells[rr][cc].classList.add('in-5x5');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!player.has5x5 && found5x5) {
+                    showToast(`🎉 ${player.name} (${player.colorName}) 達成了 5×5 領地條件！`);
+                } else if (player.has5x5 && !found5x5) {
+                    showToast(`💥 ${player.name} (${player.colorName}) 的 5×5 領地被破壞了！`);
+                }
+
+                player.tileCount = totalTiles;
+                player.has5x5 = found5x5;
+
+                document.getElementById(`tiles-p${player.id}`).textContent = `${totalTiles}格`;
+                document.getElementById(`tickets-p${player.id}`).textContent = `🎫×${player.tickets}`;
+                
+                const badge = document.getElementById(`badge-p${player.id}`);
+                if (found5x5) {
+                    badge.textContent = '👑 5×5達成';
+                    badge.classList.add('qualified');
+                } else {
+                    badge.textContent = '未達 5×5';
+                    badge.classList.remove('qualified');
+                }
+            });
+        }
+
+        // ==========================================
+        // 最終勝負結算與重置
+        // ==========================================
+        function endGame() {
+            if (isStealing) {
+                showToast('請先完成當前的搶奪行動！');
+                return;
+            }
+            evaluateBoardState();
+
+            const qualifiedPlayers = players.filter(p => p.has5x5);
+            const rankedPlayers = [...players].sort((a, b) => {
+                if (a.has5x5 !== b.has5x5) return b.has5x5 ? 1 : -1;
+                return b.tileCount - a.tileCount;
+            });
+
+            const winnerBanner = document.getElementById('winner-text');
+            if (qualifiedPlayers.length === 0) {
+                winnerBanner.textContent = '無人達成 5×5 領地，全員未達標！';
+                winnerBanner.style.color = '#e74c3c';
+            } else {
+                const topTiles = rankedPlayers[0].tileCount;
+                const winners = qualifiedPlayers.filter(p => p.tileCount === topTiles);
+                const winnerNames = winners.map(w => `${w.name}(${w.colorName})`).join('、');
+                winnerBanner.textContent = `勝者：${winnerNames} (${topTiles} 格)`;
+                winnerBanner.style.color = '#2ecc71';
+            }
+
+            const detailsHTML = rankedPlayers.map((p, idx) => {
+                const status = p.has5x5 ? '✅ 5×5達成' : '❌ 未達5×5';
+                return `<div><strong>第 ${idx + 1} 名：${p.name} (${p.colorName})</strong> — ${p.tileCount} 格 ｜ ${status}</div>`;
+            }).join('');
+
+            document.getElementById('result-details').innerHTML = detailsHTML;
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        function resetGame() {
+            document.getElementById('result-modal').style.display = 'none';
+            boardElement.innerHTML = '';
+            cells = [];
+            currentPlayerIndex = 0;
+            isStealing = false;
+            stealCount = 0;
+            isSwapping = false;
+
+            players.forEach((p, idx) => {
+                p.has5x5 = false;
+                p.tileCount = 0;
+                p.tickets = 1;
+                const card = document.getElementById(`card-p${idx}`);
+                card.classList.toggle('active-turn', idx === 0);
+            });
+
+            miniPreviewElement.style.opacity = 1;
+
+            createBoard();
+            initShapeQueue();
+            evaluateBoardState();
+            updateTurnBanner();
+            updateMiniPreview();
+            renderUpcomingQueue();
+            updateControlButtons();
+        }
+
+        // --- 旋轉、翻轉與當前草皮渲染 ---
+        function rotateShape() {
+            if (isStealing || isSwapping) return;
+            const newShape = [];
+            const rLen = currentShape.length;
+            const cLen = currentShape[0].length;
+            for (let c = 0; c < cLen; c++) {
+                newShape[c] = [];
+                for (let r = rLen - 1; r >= 0; r--) {
+                    newShape[c].push(currentShape[r][c]);
+                }
+            }
+            currentShape = newShape;
+            updateMiniPreview();
+        }
+
+        function flipShape() {
+            if (isStealing || isSwapping) return; 
+            for (let r = 0; r < currentShape.length; r++) {
+                currentShape[r].reverse();
+            }
+            updateMiniPreview();
+        }
+
+        function updateMiniPreview() {
+            miniPreviewElement.innerHTML = '';
+            const rLen = currentShape.length;
+            const cLen = currentShape[0].length;
+            
+            miniPreviewElement.style.gridTemplateColumns = `repeat(${cLen}, 11px)`;
+            miniPreviewElement.style.gridTemplateRows = `repeat(${rLen}, 11px)`;
+
+            for (let r = 0; r < rLen; r++) {
+                for (let c = 0; c < cLen; c++) {
+                    const miniCell = document.createElement('div');
+                    miniCell.classList.add('mini-cell');
+                    if (currentShape[r][c] === 1) {
+                        miniCell.classList.add(`theme-p${currentPlayerIndex}`);
+                    }
+                    miniPreviewElement.appendChild(miniCell);
+                }
+            }
+        }
+
+        function createBoard() {
+            for (let r = 0; r < rows; r++) {
+                cells[r] = [];
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    boardElement.appendChild(cell);
+                    cells[r][c] = cell;
+                }
+            }
+            placeRandomTiles('stone', 15);
+            placeRandomTiles('steal-card', 5);
+        }
+
+        function placeRandomTiles(className, count) {
+            let placed = 0;
+            while (placed < count) {
+                const r = Math.floor(Math.random() * rows);
+                const c = Math.floor(Math.random() * cols);
+                const cell = cells[r][c];
+                if (!cell.classList.contains('stone') && !cell.classList.contains('steal-card')) {
+                    cell.classList.add(className);
+                    placed++;
+                }
+            }
+        }
+
+        // --- 觸控操作 ---
+        let previewRow = -1;
+        let previewCol = -1;
+        let currentTargetCell = null;
+
+        function handleTouch(e) {
+            e.preventDefault(); 
+            if (isSwapping) return; // 調換選擇期間暫停棋盤放置預覽
+
+            const touch = e.touches[0];
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+
+            if (target && target.classList.contains('cell')) {
+                if (target !== currentTargetCell) {
+                    currentTargetCell = target;
+                    previewRow = parseInt(target.dataset.row);
+                    previewCol = parseInt(target.dataset.col);
+
+                    if (isStealing) {
+                        clearPreview();
+                        if (currentTargetCell.classList.contains('placed') && !currentTargetCell.classList.contains(`placed-p${currentPlayerIndex}`)) {
+                            currentTargetCell.classList.add('steal-target-preview');
+                        }
+                    } else {
+                        drawPreview(previewRow, previewCol);
+                    }
+                }
+            } else {
+                clearPreview();
+                currentTargetCell = null;
+                previewRow = -1;
+                previewCol = -1;
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (isSwapping) return;
+
+            if (isStealing) {
+                if (currentTargetCell) {
+                    executeSteal(currentTargetCell);
+                }
+                clearPreview();
+            } else {
+                if (previewRow !== -1 && previewCol !== -1) {
+                    placeShape(previewRow, previewCol);
+                }
+                clearPreview();
+            }
+            currentTargetCell = null;
+            previewRow = -1;
+            previewCol = -1;
+        }
+
+        boardElement.addEventListener('touchstart', handleTouch, { passive: false });
+        boardElement.addEventListener('touchmove', handleTouch, { passive: false });
+        boardElement.addEventListener('touchend', handleTouchEnd);
+
+        function clearPreview() {
+            const previewClasses = ['preview-invalid', 'preview-valid-p0', 'preview-valid-p1', 'preview-valid-p2', 'preview-valid-p3', 'steal-target-preview'];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    cells[r][c].classList.remove(...previewClasses);
+                }
+            }
+        }
+
+        function drawPreview(startRow, startCol) {
+            clearPreview();
+            let isValid = true;
+            for (let r = 0; r < currentShape.length; r++) {
+                for (let c = 0; c < currentShape[r].length; c++) {
+                    if (currentShape[r][c] === 1) {
+                        const tr = startRow + r;
+                        const tc = startCol + c;
+                        if (tr >= rows || tc >= cols || 
+                            cells[tr][tc].classList.contains('placed') || 
+                            cells[tr][tc].classList.contains('stone')) {
+                            isValid = false; 
+                        }
+                    }
+                }
+            }
+            const validClass = `preview-valid-p${currentPlayerIndex}`;
+            for (let r = 0; r < currentShape.length; r++) {
+                for (let c = 0; c < currentShape[r].length; c++) {
+                    if (currentShape[r][c] === 1) {
+                        const tr = startRow + r;
+                        const tc = startCol + c;
+                        if (tr < rows && tc < cols && !cells[tr][tc].classList.contains('placed')) {
+                             cells[tr][tc].classList.add(isValid ? validClass : 'preview-invalid');
+                        }
+                    }
+                }
+            }
+        }
+
+        function countStealableTargets() {
+            let count = 0;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (cells[r][c].classList.contains('placed') && !cells[r][c].classList.contains(`placed-p${currentPlayerIndex}`)) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        function executeSteal(targetCell) {
+            if (targetCell.classList.contains('placed') && !targetCell.classList.contains(`placed-p${currentPlayerIndex}`)) {
+                for (let i = 0; i < players.length; i++) {
+                    targetCell.classList.remove(`placed-p${i}`);
+                }
+                targetCell.classList.add(`placed-p${currentPlayerIndex}`);
+                
+                targetCell.style.transform = 'scale(1.3)';
+                setTimeout(() => targetCell.style.transform = 'scale(1)', 200);
+
+                evaluateBoardState();
+
+                stealCount--;
+                if (stealCount === 0 || countStealableTargets() === 0) {
+                    isStealing = false;
+                    miniPreviewElement.style.opacity = 1;
+                    nextTurn(); 
+                }
+            }
+        }
+
+        function placeShape(startRow, startCol) {
+            let isValid = true;
+            let stealCardsTriggered = 0; 
+
+            for (let r = 0; r < currentShape.length; r++) {
+                for (let c = 0; c < currentShape[r].length; c++) {
+                    if (currentShape[r][c] === 1) {
+                        const tr = startRow + r;
+                        const tc = startCol + c;
+                        if (tr >= rows || tc >= cols || 
+                            cells[tr][tc].classList.contains('placed') || 
+                            cells[tr][tc].classList.contains('stone')) {
+                            isValid = false;
+                        }
+                    }
+                }
+            }
+
+            if (isValid) {
+                for (let r = 0; r < currentShape.length; r++) {
+                    for (let c = 0; c < currentShape[r].length; c++) {
+                        if (currentShape[r][c] === 1) {
+                            const targetCell = cells[startRow + r][startCol + c];
+                            if (targetCell.classList.contains('steal-card')) {
+                                stealCardsTriggered++;
+                                targetCell.classList.remove('steal-card'); 
+                            }
+                            targetCell.classList.add('placed', `placed-p${currentPlayerIndex}`);
+                        }
+                    }
+                }
+
+                evaluateBoardState();
+                
+                if (stealCardsTriggered > 0) {
+                    let possibleTargets = countStealableTargets();
+                    stealCount = Math.min(stealCardsTriggered, possibleTargets);
+                    
+                    if (stealCount > 0) {
+                        isStealing = true;
+                        miniPreviewElement.style.opacity = 0.2;
+                        updateTurnBanner();
+                        updateControlButtons();
+                    } else {
+                        showToast("覆蓋了搶奪卡，但場上沒有對手草皮可搶！");
+                        nextTurn();
+                    }
+                } else {
+                    nextTurn();
+                }
+            }
+        }
+
+        // 初始化啟動
+        createBoard();
+        initShapeQueue();
+        evaluateBoardState();
+        updateTurnBanner();
+        updateMiniPreview();
+        renderUpcomingQueue();
+        updateControlButtons();
+    </script>
+</body>
+</html>
