@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>鋪草皮遊戲 — 實境桌遊版</title>
     <style>
         :root {
@@ -19,11 +19,18 @@
             --p3-color: #a855f7;
         }
 
-        * {
+        /* 徹底封鎖 iOS Safari 長按選字、放大鏡與系統彈出選單 */
+        *, *::before, *::after {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            -webkit-user-select: none;
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+        }
+
+        html, body {
+            overscroll-behavior: none;
+            overflow-x: hidden;
         }
 
         body {
@@ -33,7 +40,7 @@
             align-items: center;
             min-height: 100dvh;
             margin: 0;
-            padding: 10px 8px 24px 8px;
+            padding: 8px 8px calc(16px + env(safe-area-inset-bottom, 0px)) 8px;
             color: #f3f4f6;
             background-color: var(--studio-bg);
             background-image: 
@@ -55,26 +62,26 @@
             justify-content: space-between;
             align-items: center;
             width: 95vw;
-            max-width: 580px;
-            margin-bottom: 8px;
+            max-width: 560px;
+            margin-bottom: 6px;
         }
         .title-group {
             display: flex;
             align-items: baseline;
-            gap: 8px;
+            gap: 6px;
         }
         .title-group h2 {
             margin: 0;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 800;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             color: #ffffff;
             text-shadow: 0 2px 4px rgba(0,0,0,0.6);
         }
         .title-sub {
             font-size: 10px;
             font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             color: #9ca3af;
         }
         .header-actions {
@@ -86,10 +93,10 @@
             background: var(--panel-dark);
             color: #d1d5db;
             border: 1px solid var(--panel-border);
-            width: 32px;
-            height: 30px;
+            width: 30px;
+            height: 28px;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -99,8 +106,8 @@
             background: linear-gradient(180deg, #eab308 0%, #ca8a04 100%);
             color: #111827;
             border: none;
-            padding: 6px 12px;
-            font-size: 13px;
+            padding: 5px 11px;
+            font-size: 12px;
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.4);
@@ -112,15 +119,15 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 5px;
             width: 95vw;
-            max-width: 580px;
-            margin-bottom: 8px;
+            max-width: 560px;
+            margin-bottom: 6px;
         }
         .score-card {
             position: relative;
             background: var(--panel-dark);
             border: 1px solid rgba(255,255,255,0.12);
             border-radius: 6px;
-            padding: 6px 4px 5px 4px;
+            padding: 5px 3px 4px 3px;
             text-align: center;
             transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
             overflow: hidden;
@@ -129,7 +136,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0;
-            height: 4px;
+            height: 3.5px;
         }
         .score-card.p0::before { background: var(--p0-color); }
         .score-card.p1::before { background: var(--p1-color); }
@@ -138,14 +145,14 @@
 
         .score-card.active-turn {
             background: #272b33;
-            border-color: rgba(255,255,255,0.6);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+            border-color: rgba(255,255,255,0.65);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.45);
         }
 
         .score-name {
             font-weight: 800;
-            font-size: 12px;
+            font-size: 11px;
             margin-bottom: 2px;
             display: flex;
             align-items: center;
@@ -153,16 +160,16 @@
             gap: 4px;
         }
         .p-dot {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             display: inline-block;
         }
         .score-meta {
             color: #d1d5db;
-            font-size: 11px;
+            font-size: 10px;
             font-variant-numeric: tabular-nums;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         .ticket-count {
             color: #facc15;
@@ -170,9 +177,9 @@
         }
         .score-badge {
             display: inline-block;
-            padding: 1px 6px;
+            padding: 1px 5px;
             border-radius: 3px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 800;
             background: #111315;
             color: #6b7280;
@@ -188,13 +195,13 @@
         /* 回合廣播提示條 */
         #turn-indicator {
             width: 95vw;
-            max-width: 580px;
-            padding: 7px 12px;
+            max-width: 560px;
+            padding: 6px 10px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
-            letter-spacing: 0.6px;
-            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
             background: var(--panel-dark);
             border: 1px solid rgba(255,255,255,0.3);
             box-shadow: 0 3px 8px rgba(0,0,0,0.4);
@@ -228,12 +235,12 @@
             align-items: center;
             gap: 6px;
             width: 95vw;
-            max-width: 580px;
+            max-width: 560px;
             background: var(--panel-dark);
             border: 1px solid rgba(255,255,255,0.16);
             border-radius: 6px;
-            padding: 5px 7px;
-            margin-bottom: 8px;
+            padding: 4px 6px;
+            margin-bottom: 6px;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .queue-bar.swap-active {
@@ -242,7 +249,7 @@
             background: #252218;
         }
         .queue-label {
-            font-size: 10px;
+            font-size: 9px;
             color: #9ca3af;
             font-weight: 800;
             writing-mode: vertical-rl;
@@ -253,7 +260,7 @@
         .queue-list {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
+            gap: 4px;
             flex: 1;
         }
         .queue-item {
@@ -261,7 +268,7 @@
             background: #111316;
             border: 1px solid rgba(255,255,255,0.14);
             border-radius: 4px;
-            height: 44px;
+            height: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -276,13 +283,13 @@
         .queue-num {
             position: absolute;
             top: 2px;
-            left: 4px;
-            font-size: 9px;
+            left: 3px;
+            font-size: 8px;
             color: #6b7280;
             font-weight: 800;
         }
-        .queue-grid { display: grid; gap: 1px; }
-        .q-cell { width: 6px; height: 6px; }
+        .queue-grid { display: grid; gap: 1px; pointer-events: none; }
+        .q-cell { width: 5px; height: 5px; }
         .q-cell.filled {
             background: #2e8b47;
             border: 0.5px solid #143d1f;
@@ -292,27 +299,27 @@
         .controls {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             width: 95vw;
-            max-width: 580px;
-            margin-bottom: 10px;
+            max-width: 560px;
+            margin-bottom: 8px;
         }
 
         .tray-outer {
             position: relative;
-            width: 78px;
-            height: 78px;
+            width: 72px;
+            height: 72px;
             flex-shrink: 0;
             background: rgba(255, 255, 255, 0.65);
             padding: 2.5px;
             box-shadow: 0 6px 14px rgba(0,0,0,0.55);
             cursor: grab;
-            touch-action: none; /* 關鍵：允許直接從托盤按住拖曳到棋盤 */
+            touch-action: none;
             transition: transform 0.15s, opacity 0.25s;
         }
         .tray-outer:active {
             cursor: grabbing;
-            transform: scale(0.95);
+            transform: scale(0.94);
         }
         .tray-inner {
             position: relative;
@@ -326,10 +333,10 @@
         }
         .tray-hint {
             position: absolute;
-            bottom: 3px;
+            bottom: 2px;
             font-size: 9px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.55);
+            font-weight: 800;
+            color: #facc15;
             letter-spacing: 0.5px;
         }
         #mini-preview {
@@ -337,11 +344,11 @@
             gap: 0px;
             justify-content: center;
             align-content: center;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         .mini-cell {
-            width: 12px;
-            height: 12px;
+            width: 11px;
+            height: 11px;
         }
         .mini-cell.filled {
             background-color: #2f8e4b;
@@ -349,6 +356,26 @@
             background-size: 3px 3px;
             border: 1px solid #13381d;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        /* 拖曳時跟隨手指的浮動草皮幽靈 */
+        #drag-ghost {
+            position: fixed;
+            display: none;
+            pointer-events: none;
+            z-index: 999;
+            transform: translate(-50%, -135%);
+            filter: drop-shadow(0 10px 14px rgba(0,0,0,0.75));
+        }
+        .ghost-cell {
+            width: 18px;
+            height: 18px;
+        }
+        .ghost-cell.filled {
+            background-color: #2f8e4b;
+            background-image: radial-gradient(rgba(255,255,255,0.22) 1px, transparent 0);
+            background-size: 4px 4px;
+            border: 1.5px solid #102415;
         }
 
         .btn-grid {
@@ -361,7 +388,7 @@
             background: linear-gradient(180deg, #2b3038 0%, #1d2026 100%);
             color: #f3f4f6;
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 9px 6px;
+            padding: 8px 6px;
             font-size: 13px;
             border-radius: 6px;
             cursor: pointer;
@@ -395,9 +422,9 @@
         #confirm-bar {
             display: none;
             width: 95vw;
-            max-width: 580px;
+            max-width: 560px;
             gap: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         #confirm-bar.visible {
             display: flex;
@@ -407,11 +434,10 @@
             background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
             color: #052e16;
             border: none;
-            padding: 10px;
+            padding: 9px;
             border-radius: 6px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 900;
-            letter-spacing: 0.5px;
             cursor: pointer;
             box-shadow: 0 3px 10px rgba(34, 197, 94, 0.4);
         }
@@ -426,24 +452,24 @@
             background: #374151;
             color: #e5e7eb;
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px;
+            padding: 9px;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
         }
 
-        /* 做舊實木外框 + 20x20 石板棋盤 */
+        /* 做舊實木外框 + 20x20 石板棋盤 (自動避開 Safari 底部網址列) */
         .board-wood-frame {
             position: relative;
-            width: min(95vw, 560px);
-            padding: 10px;
+            width: min(94vw, 47dvh, 520px);
+            padding: 9px;
             border-radius: 4px;
             background: 
                 repeating-linear-gradient(90deg, rgba(0,0,0,0.14) 0px, rgba(0,0,0,0.14) 2px, transparent 2px, transparent 7px),
                 linear-gradient(135deg, #5c5043 0%, #443b31 45%, #362e26 100%);
             box-shadow: 
-                0 16px 36px rgba(0,0,0,0.75),
+                0 14px 32px rgba(0,0,0,0.75),
                 inset 0 1px 1px rgba(255,255,255,0.22),
                 inset 0 -2px 4px rgba(0,0,0,0.6);
             border: 1px solid #26201a;
@@ -462,7 +488,7 @@
             width: 100%;
             background-color: var(--grid-line);
             border: 1px solid var(--grid-line);
-            touch-action: none; /* 鎖定棋盤區域內手勢，防止畫面捲動 */
+            touch-action: none;
             cursor: crosshair;
         }
 
@@ -502,7 +528,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(9px, 2.6vw, 13px);
+            font-size: clamp(8px, 2.4vw, 12px);
             color: #b91c1c;
             font-weight: 900;
         }
@@ -549,13 +575,13 @@
         .placed-p3.piece-anchor::before { background: var(--p3-color); }
 
         /* 放置預覽 */
-        .preview-valid-p0 { background: rgba(59, 130, 246, 0.72) !important; box-shadow: inset 0 0 0 1.5px #bfdbfe; z-index: 5; }
-        .preview-valid-p1 { background: rgba(245, 158, 11, 0.72) !important; box-shadow: inset 0 0 0 1.5px #fef08a; z-index: 5; }
-        .preview-valid-p2 { background: rgba(239, 68, 68, 0.72) !important; box-shadow: inset 0 0 0 1.5px #fecaca; z-index: 5; }
-        .preview-valid-p3 { background: rgba(168, 85, 247, 0.72) !important; box-shadow: inset 0 0 0 1.5px #e9d5ff; z-index: 5; }
+        .preview-valid-p0 { background: rgba(59, 130, 246, 0.75) !important; box-shadow: inset 0 0 0 1.5px #bfdbfe; z-index: 5; }
+        .preview-valid-p1 { background: rgba(245, 158, 11, 0.75) !important; box-shadow: inset 0 0 0 1.5px #fef08a; z-index: 5; }
+        .preview-valid-p2 { background: rgba(239, 68, 68, 0.75) !important; box-shadow: inset 0 0 0 1.5px #fecaca; z-index: 5; }
+        .preview-valid-p3 { background: rgba(168, 85, 247, 0.75) !important; box-shadow: inset 0 0 0 1.5px #e9d5ff; z-index: 5; }
 
         .preview-invalid {
-            background: rgba(220, 38, 38, 0.78) !important;
+            background: rgba(220, 38, 38, 0.8) !important;
             box-shadow: inset 0 0 0 1.5px #fecaca;
             z-index: 5;
         }
@@ -582,9 +608,9 @@
             transform: translate(-4px, -110%);
             background: #141619;
             color: #ffffff;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 900;
-            padding: 2px 7px;
+            padding: 2px 6px;
             border: 1.5px solid #d4af37;
             clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px);
             box-shadow: 0 3px 8px rgba(0,0,0,0.75);
@@ -595,11 +621,11 @@
 
         #toast {
             position: fixed;
-            top: 14px;
+            top: 12px;
             background: #141619;
             color: var(--neon-lime);
             border: 1.5px solid var(--neon-lime);
-            padding: 8px 18px;
+            padding: 8px 16px;
             font-weight: 800;
             font-size: 13px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.65);
@@ -679,11 +705,12 @@
 <body>
 
     <div id="toast" class="chamfer-sm"></div>
+    <div id="drag-ghost"></div>
 
     <div class="header-bar">
         <div class="title-group">
             <h2>鋪草皮遊戲</h2>
-            <span class="title-sub">TURF LAYING</span>
+            <span class="title-sub">TURF LAYING · v2.1</span>
         </div>
         <div class="header-actions">
             <button class="btn-icon" id="btn-sound" onclick="toggleSound()" title="音效開關">🔊</button>
@@ -715,7 +742,7 @@
         </div>
     </div>
     
-    <div id="turn-indicator" class="chamfer-sm banner-p0">輪到 玩家 1 (藍色)</div>
+    <div id="turn-indicator" class="chamfer-sm banner-p0">輪到 玩家 1 (藍色) — 拖曳或點擊棋盤</div>
 
     <!-- 後續 5 片草皮預告列 -->
     <div class="queue-bar" id="queue-bar">
@@ -773,9 +800,14 @@
     </div>
 
     <script>
+        // 全局攔截 iOS Safari 原生長按選字與右鍵選單
+        document.addEventListener('selectstart', (e) => e.preventDefault());
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
         const boardElement = document.getElementById('board');
         const miniPreviewElement = document.getElementById('mini-preview');
         const trayOuterElement = document.getElementById('tray-outer');
+        const dragGhostElement = document.getElementById('drag-ghost');
         const turnIndicator = document.getElementById('turn-indicator');
         const queueBarElement = document.getElementById('queue-bar');
         const queueListElement = document.getElementById('queue-list');
@@ -858,9 +890,7 @@
         let isStealing = false;
         let stealCount = 0;
         let isSwapping = false;
-
-        // 釘選預覽狀態（支援輕點棋盤先預覽、旋轉微調後再確認放置）
-        let pinnedPreview = null; // { startRow, startCol }
+        let pinnedPreview = null;
 
         const shapePool = [
             [[1, 1, 1], [0, 1, 0]],             // T4
@@ -922,8 +952,8 @@
                 grid.className = 'queue-grid';
                 const rLen = shape.length;
                 const cLen = shape[0].length;
-                grid.style.gridTemplateColumns = `repeat(${cLen}, 6px)`;
-                grid.style.gridTemplateRows = `repeat(${rLen}, 6px)`;
+                grid.style.gridTemplateColumns = `repeat(${cLen}, 5px)`;
+                grid.style.gridTemplateRows = `repeat(${rLen}, 5px)`;
 
                 for (let r = 0; r < rLen; r++) {
                     for (let c = 0; c < cLen; c++) {
@@ -1297,8 +1327,8 @@
             const cLen = currentShape[0].length;
             
             trayOuterElement.style.background = players[currentPlayerIndex].cssColor;
-            miniPreviewElement.style.gridTemplateColumns = `repeat(${cLen}, 12px)`;
-            miniPreviewElement.style.gridTemplateRows = `repeat(${rLen}, 12px)`;
+            miniPreviewElement.style.gridTemplateColumns = `repeat(${cLen}, 11px)`;
+            miniPreviewElement.style.gridTemplateRows = `repeat(${rLen}, 11px)`;
 
             for (let r = 0; r < rLen; r++) {
                 for (let c = 0; c < cLen; c++) {
@@ -1310,6 +1340,35 @@
                     miniPreviewElement.appendChild(miniCell);
                 }
             }
+        }
+
+        // 渲染跟隨手指的浮動草皮幽靈
+        function showDragGhost(clientX, clientY) {
+            dragGhostElement.innerHTML = '';
+            const rLen = currentShape.length;
+            const cLen = currentShape[0].length;
+            dragGhostElement.style.display = 'grid';
+            dragGhostElement.style.gridTemplateColumns = `repeat(${cLen}, 18px)`;
+            dragGhostElement.style.gridTemplateRows = `repeat(${rLen}, 18px)`;
+
+            for (let r = 0; r < rLen; r++) {
+                for (let c = 0; c < cLen; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'ghost-cell';
+                    if (currentShape[r][c] === 1) cell.classList.add('filled');
+                    dragGhostElement.appendChild(cell);
+                }
+            }
+            moveDragGhost(clientX, clientY);
+        }
+
+        function moveDragGhost(clientX, clientY) {
+            dragGhostElement.style.left = `${clientX}px`;
+            dragGhostElement.style.top = `${clientY}px`;
+        }
+
+        function hideDragGhost() {
+            dragGhostElement.style.display = 'none';
         }
 
         function createBoard() {
@@ -1342,15 +1401,14 @@
         }
 
         // ==========================================
-        // 全新數學座標映射與手機多手勢操控引擎
+        // iOS Safari 強化觸控 & 滑鼠雙模操控引擎
         // ==========================================
         let activeDragSource = null; // 'tray' | 'board' | null
         let touchStartX = 0;
         let touchStartY = 0;
         let hasMovedSignificantly = false;
-        let lastPreviewStart = null; // { startRow, startCol }
+        let lastPreviewStart = null;
 
-        // 直接根據棋盤矩形邊界計算指尖對應的格子座標（不依賴 DOM elementFromPoint）
         function getCellCoordFromClient(clientX, clientY, verticalLiftCells = 0) {
             const rect = boardElement.getBoundingClientRect();
             const cellSize = rect.width / cols;
@@ -1364,7 +1422,6 @@
             return { row, col };
         }
 
-        // 計算以指尖為中心的草皮左上角錨點，並自動夾在棋盤邊界內方便瞄準
         function getCenteredShapeOrigin(centerRow, centerCol) {
             const h = currentShape.length;
             const w = currentShape[0].length;
@@ -1420,7 +1477,6 @@
             return isValid;
         }
 
-        // 釘選預覽控制（輕點棋盤後顯示確認按鈕）
         function setPinnedPreview(startRow, startCol) {
             pinnedPreview = { startRow, startCol };
             const valid = drawPreview(startRow, startCol);
@@ -1453,16 +1509,23 @@
             }
         }
 
-        // 統一處理按下 (Touch / Mouse)
         function onInteractionStart(source, clientX, clientY, isTouch) {
             if (isSwapping) return;
+            if (window.getSelection) {
+                try { window.getSelection().removeAllRanges(); } catch (e) {}
+            }
+
             activeDragSource = source;
             touchStartX = clientX;
             touchStartY = clientY;
             hasMovedSignificantly = false;
             lastPreviewStart = null;
 
-            const lift = isTouch ? (source === 'tray' ? 1.8 : 1.0) : 0;
+            if (source === 'tray' && !isStealing) {
+                showDragGhost(clientX, clientY);
+            }
+
+            const lift = isTouch ? (source === 'tray' ? 1.8 : 0.9) : 0;
             const coord = getCellCoordFromClient(clientX, clientY, lift);
 
             if (isStealing) {
@@ -1483,20 +1546,22 @@
             }
         }
 
-        // 統一處理滑動 (Touch / Mouse)
         function onInteractionMove(clientX, clientY, isTouch) {
             if (!activeDragSource || isSwapping) return;
 
-            if (Math.hypot(clientX - touchStartX, clientY - touchStartY) > 10) {
+            if (activeDragSource === 'tray') {
+                moveDragGhost(clientX, clientY);
+            }
+
+            if (Math.hypot(clientX - touchStartX, clientY - touchStartY) > 8) {
                 hasMovedSignificantly = true;
-                // 一旦開始拖曳，自動解除舊的釘選狀態
                 if (pinnedPreview) {
                     pinnedPreview = null;
                     confirmBarElement.classList.remove('visible');
                 }
             }
 
-            const lift = isTouch ? (activeDragSource === 'tray' ? 1.8 : 1.0) : 0;
+            const lift = isTouch ? (activeDragSource === 'tray' ? 1.8 : 0.9) : 0;
             const coord = getCellCoordFromClient(clientX, clientY, lift);
 
             if (isStealing) {
@@ -1511,25 +1576,27 @@
             }
 
             if (coord) {
+                // 一旦拖進棋盤範圍內，隱藏手指幽靈改用精準棋盤網格預覽
+                if (activeDragSource === 'tray') hideDragGhost();
                 const origin = getCenteredShapeOrigin(coord.row, coord.col);
                 lastPreviewStart = origin;
                 drawPreview(origin.startRow, origin.startCol);
             } else {
+                if (activeDragSource === 'tray') showDragGhost(clientX, clientY);
                 lastPreviewStart = null;
                 clearPreview();
             }
         }
 
-        // 統一處理放開 (Touch / Mouse)
         function onInteractionEnd(clientX, clientY, isTouch) {
             if (!activeDragSource || isSwapping) return;
             const source = activeDragSource;
             activeDragSource = null;
+            hideDragGhost();
 
-            const lift = isTouch ? (source === 'tray' ? 1.8 : 1.0) : 0;
+            const lift = isTouch ? (source === 'tray' ? 1.8 : 0.9) : 0;
             const coord = getCellCoordFromClient(clientX, clientY, lift);
 
-            // 搶奪模式
             if (isStealing) {
                 clearPreview();
                 if (coord) {
@@ -1538,10 +1605,8 @@
                 return;
             }
 
-            // 情況 1：從草皮托盤拖曳出來
             if (source === 'tray') {
                 if (!hasMovedSignificantly) {
-                    // 輕點托盤 -> 順時針旋轉草皮（超方便的單手快捷操作！）
                     rotateShape();
                     return;
                 }
@@ -1554,10 +1619,8 @@
                 return;
             }
 
-            // 情況 2：在棋盤上操作
             if (source === 'board') {
                 if (hasMovedSignificantly) {
-                    // 手指在棋盤上滑動後放開 -> 若位置合法則直接放置
                     if (lastPreviewStart && isPlacementValid(lastPreviewStart.startRow, lastPreviewStart.startCol)) {
                         clearPinnedPreview();
                         placeShape(lastPreviewStart.startRow, lastPreviewStart.startCol);
@@ -1567,8 +1630,6 @@
                         clearPreview();
                     }
                 } else if (coord) {
-                    // 單純輕點棋盤某一格：
-                    // 若已經釘選在同一位置且位置合法 -> 直接放置！否則釘選該位置供微調確認
                     const origin = getCenteredShapeOrigin(coord.row, coord.col);
                     if (pinnedPreview && pinnedPreview.startRow === origin.startRow && pinnedPreview.startCol === origin.startCol) {
                         if (isPlacementValid(origin.startRow, origin.startCol)) {
@@ -1583,7 +1644,7 @@
             }
         }
 
-        // 綁定觸控事件（托盤 + 棋盤皆可啟動）
+        // 綁定觸控事件
         trayOuterElement.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const t = e.touches[0];
@@ -1596,20 +1657,26 @@
             onInteractionStart('board', t.clientX, t.clientY, true);
         }, { passive: false });
 
-        window.addEventListener('touchmove', (e) => {
+        document.addEventListener('touchmove', (e) => {
             if (!activeDragSource) return;
             e.preventDefault();
             const t = e.touches[0];
             onInteractionMove(t.clientX, t.clientY, true);
         }, { passive: false });
 
-        window.addEventListener('touchend', (e) => {
+        document.addEventListener('touchend', (e) => {
             if (!activeDragSource) return;
             const t = e.changedTouches[0];
             onInteractionEnd(t.clientX, t.clientY, true);
         });
 
-        // 綁定桌面滑鼠事件
+        document.addEventListener('touchcancel', () => {
+            activeDragSource = null;
+            hideDragGhost();
+            clearPreview();
+        });
+
+        // 綁定滑鼠事件
         trayOuterElement.addEventListener('mousedown', (e) => {
             onInteractionStart('tray', e.clientX, e.clientY, false);
         });
