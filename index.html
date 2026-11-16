@@ -17,8 +17,10 @@
             --grid-line: #3b3732;
             --neon-lime: #d8ff2e;
             --gold-accent: #d4af37;
-            --bio-purple: #c084fc;
-            --bio-green: #4ade80;
+            --bio-purple: #a855f7;
+            --bio-purple-light: #e9d5ff;
+            --bio-green: #22c55e;
+            --bio-red: #ef4444;
 
             /* 兩隊陣營專屬識別色 */
             --team0-color: #38bdf8;
@@ -44,7 +46,7 @@
             user-select: none !important;
         }
 
-        input, textarea {
+        input, textarea, select {
             -webkit-user-select: text !important;
             user-select: text !important;
             -webkit-touch-callout: default !important;
@@ -111,7 +113,7 @@
 
         .lobby-container {
             width: 100%;
-            max-width: 820px;
+            max-width: 840px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -216,21 +218,17 @@
             padding: 2px;
             transition: transform 0.16s ease, filter 0.16s ease;
             display: flex;
+            cursor: pointer;
         }
-        .game-card-outer.playable {
+        .game-card-outer.turf-card {
             background: linear-gradient(135deg, var(--gold-accent) 0%, rgba(212,175,55,0.28) 50%, var(--neon-lime) 100%);
             box-shadow: 0 14px 32px rgba(0, 0, 0, 0.65);
-            cursor: pointer;
         }
-        .game-card-outer.playable:active {
-            transform: scale(0.98);
+        .game-card-outer.virus-card {
+            background: linear-gradient(135deg, #a855f7 0%, rgba(212,175,55,0.35) 50%, #22c55e 100%);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.7);
         }
-        .game-card-outer.coming-soon {
-            background: linear-gradient(135deg, rgba(192, 132, 252, 0.55) 0%, rgba(255, 255, 255, 0.12) 55%, rgba(74, 222, 128, 0.4) 100%);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
-            cursor: pointer;
-        }
-        .game-card-outer.coming-soon:active {
+        .game-card-outer:active {
             transform: scale(0.98);
         }
 
@@ -265,8 +263,8 @@
         }
         .game-emblem.virus-emblem {
             background: #15121e;
-            border-color: rgba(192, 132, 252, 0.55);
-            box-shadow: 0 6px 14px rgba(0,0,0,0.55), 0 0 14px rgba(192, 132, 252, 0.2);
+            border-color: rgba(168, 85, 247, 0.65);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.55), 0 0 14px rgba(168, 85, 247, 0.25);
         }
         .emblem-cell {
             background: #b5ada0;
@@ -314,10 +312,9 @@
             background: var(--neon-lime);
             color: #111827;
         }
-        .game-status-tag.soon {
-            background: rgba(192, 132, 252, 0.2);
-            color: var(--bio-purple);
-            border: 1px solid rgba(192, 132, 252, 0.5);
+        .game-status-tag.new-live {
+            background: linear-gradient(90deg, #c084fc 0%, #4ade80 100%);
+            color: #090d16;
         }
         .game-num-code {
             font-size: 10px;
@@ -366,16 +363,17 @@
             cursor: pointer;
             box-shadow: 0 4px 16px rgba(216, 255, 46, 0.3);
         }
-        .btn-soon-game {
+        .btn-launch-virus {
             width: 100%;
-            padding: 11px 16px;
-            font-size: 13.5px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            color: #e9d5ff;
-            background: rgba(168, 85, 247, 0.16);
-            border: 1px solid rgba(192, 132, 252, 0.45);
+            padding: 12px 16px;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #9333ea 0%, #6d28d9 55%, #16a34a 100%);
+            border: none;
             cursor: pointer;
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.35);
         }
 
         .lobby-footer-note {
@@ -386,7 +384,7 @@
         }
 
         /* =========================================================
-           草皮戰爭：全螢幕彈層（教學頁 & 對戰設定頁）
+           通用全螢幕彈層（教學頁 & 設定頁）
            ========================================================= */
         .full-overlay {
             position: fixed;
@@ -405,12 +403,15 @@
 
         .panel-frame-outer {
             width: 100%;
-            max-width: 490px;
-            max-height: 90dvh;
+            max-width: 510px;
+            max-height: 91dvh;
             padding: 2px;
             background: linear-gradient(180deg, var(--gold-accent) 0%, rgba(212,175,55,0.35) 100%);
             box-shadow: 0 20px 48px rgba(0,0,0,0.85);
             display: flex;
+        }
+        .panel-frame-outer.virus-theme {
+            background: linear-gradient(180deg, #a855f7 0%, rgba(34, 197, 94, 0.45) 100%);
         }
         .panel-frame-inner {
             width: 100%;
@@ -460,6 +461,9 @@
             color: var(--neon-lime);
             letter-spacing: 1.5px;
         }
+        .overlay-header.virus-h h3 {
+            color: #d8b4fe;
+        }
         .overlay-header p {
             margin: 3px 0 0 0;
             font-size: 12px;
@@ -485,6 +489,12 @@
         .tut-card.highlight {
             border-left-color: var(--neon-lime);
         }
+        .tut-card.bio-purple-border {
+            border-left-color: #a855f7;
+        }
+        .tut-card.bio-green-border {
+            border-left-color: #22c55e;
+        }
         .tut-icon {
             font-size: 20px;
             line-height: 1.2;
@@ -506,6 +516,7 @@
         }
         .tut-em { color: var(--neon-lime); font-weight: 800; }
         .tut-gold { color: #facc15; font-weight: 800; }
+        .tut-purple { color: #d8b4fe; font-weight: 800; }
 
         /* 對戰模式切換器（個人混戰 vs 團體兩隊） */
         .mode-selector {
@@ -605,6 +616,9 @@
             margin-bottom: 14px;
             flex-shrink: 0;
         }
+        .count-selector.four-cols {
+            grid-template-columns: repeat(4, 1fr);
+        }
         .count-btn {
             background: #121418;
             color: #9ca3af;
@@ -621,6 +635,12 @@
             color: var(--neon-lime);
             border: 1.5px solid var(--neon-lime);
             box-shadow: 0 0 12px rgba(216, 255, 46, 0.25);
+        }
+        .count-btn.virus-active {
+            background: rgba(168, 85, 247, 0.22);
+            color: #e9d5ff;
+            border: 1.5px solid #a855f7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
         }
 
         .name-inputs-list {
@@ -713,6 +733,11 @@
             cursor: pointer;
             box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
             flex-shrink: 0;
+        }
+        .btn-primary-action.virus-btn {
+            color: #ffffff;
+            background: linear-gradient(135deg, #9333ea 0%, #6d28d9 60%, #15803d 100%);
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
         }
         .btn-primary-action:active {
             transform: scale(0.97);
@@ -1253,9 +1278,7 @@
             cursor: pointer;
         }
 
-        /* =========================================================
-           做舊實木外框 + 20x20 石板草皮棋盤（強制 1:1 鎖定防止 iOS Safari 塌陷）
-           ========================================================= */
+        /* 做舊實木外框 + 20x20 石板草皮棋盤（強制 1:1 鎖定防止 iOS Safari 塌陷） */
         .board-wood-frame {
             position: relative;
             width: min(94vw, 47dvh, 520px);
@@ -1358,28 +1381,13 @@
             width: min(54vw, calc(100dvh - 28px), 660px);
         }
 
-        /* iPhone Duo 5.4吋摺合外螢幕專屬緊湊微調 (<= 380px 窄屏) */
         @media (max-width: 380px) {
-            body:not(.duo-split) .title-group h2 {
-                font-size: 13px;
-            }
-            body:not(.duo-split) .score-card {
-                padding: 3px 2px;
-            }
-            body:not(.duo-split) .score-name {
-                font-size: 10px;
-            }
-            body:not(.duo-split) .tray-outer {
-                width: 62px;
-                height: 62px;
-            }
-            body:not(.duo-split) .btn-grid button {
-                padding: 7px 4px;
-                font-size: 12px;
-            }
-            body:not(.duo-split) .board-wood-frame {
-                padding: 7px;
-            }
+            body:not(.duo-split) .title-group h2 { font-size: 13px; }
+            body:not(.duo-split) .score-card { padding: 3px 2px; }
+            body:not(.duo-split) .score-name { font-size: 10px; }
+            body:not(.duo-split) .tray-outer { width: 62px; height: 62px; }
+            body:not(.duo-split) .btn-grid button { padding: 7px 4px; font-size: 12px; }
+            body:not(.duo-split) .board-wood-frame { padding: 7px; }
         }
 
         .board-recess {
@@ -1461,7 +1469,6 @@
         }
         .placed::after { content: none; }
 
-        /* 8位玩家草皮微妙色差 */
         .placed-p0 { background-color: #268259; }
         .placed-p1 { background-color: #3a8f3d; }
         .placed-p2 { background-color: #277d42; }
@@ -1471,7 +1478,6 @@
         .placed-p6 { background-color: #418e36; }
         .placed-p7 { background-color: #2c8a3b; }
 
-        /* 團體模式陣營底紋微標 */
         .placed-team-0 { box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.32); }
         .placed-team-1 { box-shadow: inset 0 0 0 1px rgba(251, 113, 133, 0.32); }
 
@@ -1547,6 +1553,487 @@
             white-space: nowrap;
         }
 
+        /* =========================================================
+           遊戲二：《病毒遊戲》(Virus Game — 魔鬼的計謀主賽 1)
+           ========================================================= */
+        .role-mix-banner {
+            background: #12141a;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            font-size: 11.5px;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+        .role-pill-t { color: #d8b4fe; font-weight: 800; }
+        .role-pill-c { color: #fde047; font-weight: 800; }
+        .role-pill-n { color: #67e8f9; font-weight: 800; }
+
+        /* 盲抽角色卡界面 */
+        .draw-card-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 6px 0;
+        }
+        .seat-number-emblem {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #9333ea 0%, #3b0764 100%);
+            border: 2px solid #e9d5ff;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 16px auto 22px auto;
+            box-shadow: 0 0 24px rgba(168, 85, 247, 0.55);
+        }
+        .seat-number-emblem span {
+            transform: rotate(-45deg);
+            font-size: 26px;
+            font-weight: 900;
+            color: #ffffff;
+        }
+
+        .secret-role-card {
+            width: 100%;
+            background: radial-gradient(circle at top, #252033 0%, #121419 100%);
+            border: 1.5px solid #a855f7;
+            border-radius: 10px;
+            padding: 14px 12px;
+            margin: 10px 0 14px 0;
+            text-align: left;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.75);
+        }
+        .secret-role-card.citizen-card {
+            border-color: #eab308;
+            background: radial-gradient(circle at top, #2b2618 0%, #121419 100%);
+        }
+        .secret-role-card.neutral-card {
+            border-color: #06b6d4;
+            background: radial-gradient(circle at top, #162933 0%, #121419 100%);
+        }
+        .role-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+        .role-title-big {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ffffff;
+        }
+        .role-faction-badge {
+            font-size: 11px;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .faction-terrorist { background: rgba(168, 85, 247, 0.25); color: #e9d5ff; border: 1px solid #a855f7; }
+        .faction-citizen { background: rgba(234, 179, 8, 0.22); color: #fef08a; border: 1px solid #eab308; }
+        .faction-neutral { background: rgba(6, 182, 212, 0.22); color: #a5f3fc; border: 1px solid #06b6d4; }
+
+        .role-detail-item {
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+        }
+        .role-detail-item strong {
+            color: var(--neon-lime);
+        }
+        .partner-callout {
+            background: rgba(168, 85, 247, 0.18);
+            border: 1px dashed #c084fc;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #f3e8ff;
+            margin-top: 8px;
+        }
+
+        /* 病毒遊戲主舞台佈局 */
+        #game-virus-war {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+        #game-virus-war.active-game {
+            display: flex;
+        }
+
+        .virus-left-col, .virus-right-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        @media (min-width: 660px) {
+            body.duo-auto #game-virus-war.active-game,
+            body.duo-split #game-virus-war.active-game {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+                max-width: 1120px;
+                gap: 16px;
+                padding: 4px 8px;
+            }
+            body.duo-auto .virus-left-col,
+            body.duo-split .virus-left-col {
+                width: 46%;
+                max-width: 480px;
+            }
+            body.duo-auto .virus-right-col,
+            body.duo-split .virus-right-col {
+                width: 54%;
+                max-width: 560px;
+            }
+        }
+
+        /* 5回合進度軌 + 30分鐘倒數計時器 */
+        .virus-timer-card {
+            width: 95vw;
+            max-width: 100%;
+            background: #14171c;
+            border: 1px solid rgba(168, 85, 247, 0.45);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+        }
+        .round-track {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        .round-step {
+            text-align: center;
+            padding: 4px 2px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 900;
+            background: #1d2026;
+            color: #6b7280;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .round-step.done {
+            background: rgba(239, 68, 68, 0.18);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+        .round-step.current {
+            background: linear-gradient(135deg, #9333ea 0%, #ef4444 100%);
+            color: #ffffff;
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
+        }
+
+        .clock-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .clock-display {
+            font-size: 22px;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            color: var(--neon-lime);
+            letter-spacing: 1px;
+        }
+        .clock-controls {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .btn-clock {
+            background: #232730;
+            color: #e5e7eb;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .btn-next-round {
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 9px;
+            font-size: 11.5px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+
+        /* 每回合公開播報面板（感染人數、死亡人數、治療劑進度） */
+        .virus-broadcast-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            width: 95vw;
+            max-width: 100%;
+            margin-bottom: 6px;
+        }
+        .broadcast-stat {
+            background: #14171c;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 7px;
+            padding: 6px 6px;
+            text-align: center;
+        }
+        .broadcast-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: #9ca3af;
+            margin-bottom: 2px;
+        }
+        .broadcast-val {
+            font-size: 17px;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+        }
+        .val-infected { color: #4ade80; }
+        .val-dead { color: #f87171; }
+        .val-cure { color: #38bdf8; }
+
+        .cure-bar-wrap {
+            width: 100%;
+            height: 5px;
+            background: #262a33;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .cure-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #06b6d4 0%, #22c55e 100%);
+            transition: width 0.35s ease;
+        }
+
+        /* 1~12 號環狀座位圖（還原節目圖三視覺） */
+        .virus-ring-container {
+            position: relative;
+            width: 95vw;
+            max-width: 440px;
+            aspect-ratio: 1.12 / 1;
+            background: radial-gradient(circle at center, #252830 0%, #15171b 100%);
+            border: 1.5px solid rgba(255, 255, 255, 0.16);
+            border-radius: 12px;
+            margin-bottom: 6px;
+            box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.75);
+            overflow: hidden;
+        }
+        .ring-center-info {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            width: 48%;
+        }
+        .ring-center-title {
+            font-size: 13px;
+            font-weight: 900;
+            color: #e9d5ff;
+            letter-spacing: 1px;
+        }
+        .ring-center-sub {
+            font-size: 10px;
+            color: #9ca3af;
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        .ring-node {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 58px;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .ring-node:active {
+            transform: translate(-50%, -50%) scale(0.93);
+        }
+        .node-diamond {
+            width: 30px;
+            height: 30px;
+            transform: rotate(45deg);
+            background: linear-gradient(135deg, #8b5cf6 0%, #4c1d95 100%);
+            border: 1.5px solid #e9d5ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.65);
+            margin-bottom: 5px;
+        }
+        .node-diamond span {
+            transform: rotate(-45deg);
+            font-size: 12px;
+            font-weight: 900;
+            color: #ffffff;
+        }
+        .ring-node.dead .node-diamond {
+            background: #27272a;
+            border-color: #ef4444;
+            opacity: 0.65;
+        }
+        .node-name {
+            font-size: 10px;
+            font-weight: 800;
+            color: #f3f4f6;
+            background: rgba(17, 19, 24, 0.85);
+            padding: 1px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .node-dead-stamp {
+            position: absolute;
+            top: 8px;
+            background: rgba(185, 28, 28, 0.94);
+            color: #ffffff;
+            border: 1px solid #fca5a5;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 1px 5px;
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+        }
+        .node-revealed-tag {
+            font-size: 8.5px;
+            font-weight: 900;
+            color: #fde047;
+            margin-top: 1px;
+        }
+
+        /* 秘密檢驗室按鈕 + 荷官隔離房 */
+        .virus-action-bar {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 8px;
+            width: 95vw;
+            max-width: 100%;
+            margin-bottom: 6px;
+        }
+        .btn-secret-lab {
+            background: linear-gradient(135deg, #7e22ce 0%, #4c1d95 100%);
+            color: #ffffff;
+            border: 1.5px solid #d8b4fe;
+            padding: 12px 10px;
+            font-size: 13.5px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+        }
+        .btn-headline-log {
+            background: #181b22;
+            color: #fde047;
+            border: 1px solid rgba(250, 204, 21, 0.45);
+            padding: 12px 8px;
+            font-size: 12.5px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .quarantine-box {
+            width: 95vw;
+            max-width: 100%;
+            background: #14161a;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .quarantine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11.5px;
+            font-weight: 900;
+            color: #fca5a5;
+            margin-bottom: 6px;
+        }
+        .quarantine-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 11.5px;
+            color: #9ca3af;
+        }
+        .dead-pill {
+            background: rgba(127, 29, 29, 0.35);
+            border: 1px solid rgba(248, 113, 113, 0.5);
+            color: #fecaca;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-weight: 800;
+        }
+
+        /* 秘密終端內部的目標網格選擇器 */
+        .terminal-player-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin: 10px 0;
+        }
+        .term-seat-btn {
+            background: #181b22;
+            border: 1px solid rgba(255,255,255,0.18);
+            color: #f3f4f6;
+            border-radius: 6px;
+            padding: 8px 4px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            text-align: center;
+        }
+        .term-seat-btn.selected {
+            background: rgba(168, 85, 247, 0.28);
+            border-color: #d8b4fe;
+            color: #ffffff;
+        }
+        .term-seat-btn.dead-seat {
+            opacity: 0.45;
+            border-color: #ef4444;
+        }
+
+        .lab-result-box {
+            background: #111318;
+            border: 1.5px solid #38bdf8;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .lab-result-box.positive {
+            border-color: #ef4444;
+            background: rgba(127, 29, 29, 0.25);
+        }
+        .lab-result-box.negative {
+            border-color: #22c55e;
+            background: rgba(20, 83, 45, 0.25);
+        }
+
         #toast {
             position: fixed;
             top: max(12px, env(safe-area-inset-top, 12px));
@@ -1561,7 +2048,7 @@
             pointer-events: none;
             transition: opacity 0.25s, transform 0.25s;
             transform: translateY(-10px);
-            z-index: 700;
+            z-index: 800;
             max-width: 90vw;
             text-align: center;
         }
@@ -1574,27 +2061,31 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(10, 12, 15, 0.84);
+            background: rgba(10, 12, 15, 0.86);
             backdrop-filter: blur(4px);
             justify-content: center;
             align-items: center;
-            z-index: 600;
-            padding: 20px;
+            z-index: 650;
+            padding: 16px;
         }
         .modal-box {
             background: #1c1f24;
             border: 1.5px solid var(--gold-accent);
-            padding: 18px;
-            width: 92%;
-            max-width: 400px;
+            padding: 16px;
+            width: 94%;
+            max-width: 430px;
+            max-height: 88dvh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
             text-align: center;
             box-shadow: 0 16px 40px rgba(0,0,0,0.85);
         }
         .modal-box.virus-modal {
             border-color: var(--bio-purple);
         }
-        .modal-box h3 { margin: 0 0 10px 0; color: #facc15; font-size: 19px; }
-        .modal-box.virus-modal h3 { color: var(--bio-purple); }
+        .modal-box h3 { margin: 0 0 8px 0; color: #facc15; font-size: 18px; }
+        .modal-box.virus-modal h3 { color: #d8b4fe; }
         .gift-targets {
             display: flex;
             flex-direction: column;
@@ -1627,13 +2118,13 @@
         }
         .result-list {
             text-align: left;
-            margin: 12px 0;
+            margin: 10px 0;
             background: #121417;
             border: 1px solid rgba(255,255,255,0.1);
             padding: 10px 12px;
             border-radius: 6px;
             line-height: 1.75;
-            font-size: 13px;
+            font-size: 12.5px;
             max-height: 44dvh;
             overflow-y: auto;
             touch-action: pan-y;
@@ -1681,7 +2172,7 @@
             <div class="lobby-topbar">
                 <div class="lobby-status-pill">
                     <span class="status-dot"></span>
-                    <span>GAME HUB · 1 款可遊玩 / 1 款研發中</span>
+                    <span>GAME HUB · 2 款主賽遊戲已上線</span>
                 </div>
                 <button type="button" class="btn-icon" id="btn-sound-lobby" onclick="toggleSound()" title="音效開關">🔊 音效</button>
             </div>
@@ -1699,8 +2190,8 @@
             </div>
 
             <div class="games-grid">
-                <!-- 遊戲 01：草皮戰爭（已上線，可直接遊玩） -->
-                <article class="game-card-outer playable chamfer-lg" onclick="launchTurfWar()">
+                <!-- 遊戲 01：草皮戰爭 -->
+                <article class="game-card-outer turf-card chamfer-lg" onclick="launchTurfWar()">
                     <div class="game-card-inner chamfer-lg">
                         <div>
                             <div class="game-card-top">
@@ -1758,8 +2249,8 @@
                     </div>
                 </article>
 
-                <!-- 遊戲 02：病毒遊戲（預告槽位，方便後續擴充） -->
-                <article class="game-card-outer coming-soon chamfer-lg" onclick="openVirusPreviewModal()">
+                <!-- 遊戲 02：病毒遊戲（魔鬼的計謀主賽 1 完整實裝） -->
+                <article class="game-card-outer virus-card chamfer-lg" onclick="launchVirusGame()">
                     <div class="game-card-inner chamfer-lg">
                         <div>
                             <div class="game-card-top">
@@ -1797,47 +2288,35 @@
 
                                 <div class="game-card-info">
                                     <div class="game-badge-row">
-                                        <span class="game-status-tag soon">COMING SOON · 即將推出</span>
+                                        <span class="game-status-tag new-live">NEW · 正式上線</span>
                                         <span class="game-num-code">NO.02</span>
                                     </div>
                                     <h2 class="game-card-title">病毒遊戲</h2>
-                                    <p class="game-card-desc">神秘變異株正在實驗室蔓延⋯⋯潛伏傳染、隔離封鎖與抗體研發的心理猜忌新作，即將正式登陸「翁韶的計謀」平台！</p>
+                                    <p class="game-card-desc">《魔鬼的計謀》第一場主賽！抽籤號碼與盲抽秘密角色，5 回合環狀病毒傳染、檢驗室確診檢查與治療劑研發心理博弈。</p>
                                 </div>
                             </div>
                         </div>
 
                         <div style="display:flex; flex-direction:column; gap:10px;">
                             <div class="game-card-tags">
-                                <span class="mini-tag">🧬 感染擴散</span>
-                                <span class="mini-tag">💉 抗體與隔離</span>
-                                <span class="mini-tag">🕵️ 陣營心理戰</span>
+                                <span class="mini-tag">9～12 人主賽</span>
+                                <span class="mini-tag">☣️ 固有號碼環狀傳染</span>
+                                <span class="mini-tag">🔬 檢驗室 & 秘密任務</span>
                             </div>
-                            <button type="button" class="btn-soon-game chamfer-sm">🧬 實驗室研發中（點擊預覽）</button>
+                            <button type="button" class="btn-launch-virus chamfer-sm">☣️ 進入《病毒遊戲》</button>
                         </div>
                     </div>
                 </article>
             </div>
 
             <div class="lobby-footer-note">
-                翁韶的計謀遊戲平台 · 持續擴充原創多人策略遊戲
+                翁韶的計謀遊戲平台 · 原創同機多人策略對決
             </div>
         </div>
     </section>
 
-    <!-- 病毒遊戲即將推出預告彈窗 -->
-    <div class="modal-overlay" id="virus-preview-modal">
-        <div class="modal-box virus-modal chamfer-md">
-            <h3>🧬《病毒遊戲》即將登場</h3>
-            <p style="font-size: 13.5px; color: #e5e7eb; line-height: 1.65; margin: 10px 0 14px 0;">
-                呢款「翁韶的計謀」平台第二款新作已經預留好專屬遊戲大廳槽位！<br>
-                等你準備好<strong>《病毒遊戲》</strong>嘅規則同玩法細節，我哋隨時可以將佢直接接入呢個平台。
-            </p>
-            <button type="button" class="btn-cancel-modal" style="background:#7e22ce; color:#ffffff;" onclick="closeVirusPreviewModal()">知道了，返回平台大廳</button>
-        </div>
-    </div>
-
     <!-- =========================================================
-         草皮戰爭 — 遊戲教學說明頁
+         《草皮戰爭》教學說明頁
          ========================================================= -->
     <section id="tutorial-screen" class="full-overlay">
         <div class="panel-frame-outer chamfer-lg">
@@ -1892,7 +2371,7 @@
     </section>
 
     <!-- =========================================================
-         草皮戰爭 — 遊玩模式（個人／兩隊）、人數（4～8人）與命名設定頁
+         《草皮戰爭》設定頁
          ========================================================= -->
     <section id="setup-screen" class="full-overlay">
         <div class="panel-frame-outer chamfer-lg">
@@ -1922,7 +2401,6 @@
                     </button>
                 </div>
 
-                <!-- 團體模式專屬：兩隊名稱設定 -->
                 <div class="team-names-box" id="team-names-box">
                     <div class="team-name-card t0">
                         <label class="team-name-label" for="team-name-0">A隊名稱（蒼藍陣營）</label>
@@ -1964,7 +2442,7 @@
         <div class="command-panel">
             <div class="header-bar">
                 <div class="title-group">
-                    <button type="button" class="btn-home-hub" onclick="confirmReturnToLobby()" title="返回翁韶的計謀遊戲大廳">🏠 大廳</button>
+                    <button type="button" class="btn-home-hub" onclick="returnToPlatformLobby()" title="返回翁韶的計謀遊戲大廳">🏠 大廳</button>
                     <h2>草皮戰爭</h2>
                 </div>
                 <div class="header-actions">
@@ -1975,7 +2453,6 @@
                 </div>
             </div>
 
-            <!-- 團體模式：雙隊總分對比橫幅 -->
             <div id="team-scoreboard">
                 <div class="team-banner-card t0" id="team-card-0">
                     <div class="team-info-left">
@@ -1993,18 +2470,14 @@
                 </div>
             </div>
 
-            <!-- 4～8人動態即時記分板 -->
             <div id="scoreboard"></div>
-            
             <div id="turn-indicator" class="chamfer-sm banner-p0">輪到 玩家 1 (藍色) — 拖曳或點擊棋盤</div>
 
-            <!-- 後續 5 片草皮預告列 -->
             <div class="queue-bar" id="queue-bar">
                 <div class="queue-label">後續5片</div>
                 <div class="queue-list" id="queue-list"></div>
             </div>
 
-            <!-- 可直接拖曳的八角切角草皮托盤 + 2x2 戰術控制鍵 -->
             <div class="controls">
                 <div class="tray-outer chamfer-md" id="tray-outer">
                     <div class="tray-inner chamfer-md">
@@ -2020,14 +2493,12 @@
                 </div>
             </div>
 
-            <!-- 輕點棋盤釘選預覽時的快速確認浮動條 -->
             <div id="confirm-bar">
                 <button type="button" id="btn-confirm-place" onclick="confirmPinnedPlacement()">✓ 確認放置草皮</button>
                 <button type="button" id="btn-cancel-pin" onclick="clearPinnedPreview()">取消</button>
             </div>
         </div>
 
-        <!-- 做舊實木外框 + 20x20 石板草皮棋盤 -->
         <div class="board-stage">
             <div class="board-wood-frame" id="board-wood-frame">
                 <div class="board-recess">
@@ -2047,7 +2518,7 @@
         </div>
     </div>
 
-    <!-- 最終勝負結算視窗 -->
+    <!-- 草皮戰爭結算視窗 -->
     <div class="modal-overlay" id="result-modal">
         <div class="modal-box chamfer-md">
             <h3>🏆 最終勝負結算</h3>
@@ -2057,6 +2528,231 @@
                 <div class="result-actions-row">
                     <button type="button" onclick="resetGameSamePlayers()" style="flex: 1.2; background: #22c55e; color: #052e16; border: none; padding: 11px 8px; border-radius: 6px; font-size: 14px; font-weight: 800; cursor: pointer;">再來一局</button>
                     <button type="button" onclick="reopenSetupFromResult()" style="flex: 1; background: #374151; color: #f3f4f6; border: 1px solid rgba(255,255,255,0.2); padding: 11px 8px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">重設模式／分隊</button>
+                </div>
+                <button type="button" onclick="returnToPlatformLobby()" style="width: 100%; background: rgba(212, 175, 55, 0.16); color: #fde047; border: 1px solid rgba(212, 175, 55, 0.45); padding: 9px; border-radius: 6px; font-size: 13px; font-weight: 800; cursor: pointer;">🏠 返回「翁韶的計謀」遊戲大廳</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         遊戲二：《病毒遊戲》教學與規則頁
+         ========================================================= -->
+    <section id="virus-tutorial-screen" class="full-overlay">
+        <div class="panel-frame-outer virus-theme chamfer-lg">
+            <div class="panel-frame-inner chamfer-lg">
+                <div class="overlay-top-nav">
+                    <button type="button" class="btn-back-lobby-link" onclick="returnToPlatformLobby()">← 返回平台大廳</button>
+                    <span class="overlay-game-crumb" style="color:#d8b4fe;">翁韶的計謀 · 病毒遊戲</span>
+                </div>
+
+                <div class="overlay-header virus-h">
+                    <h3>☣️ 《病毒遊戲》主賽規則指南</h3>
+                    <p>魔鬼的計謀第一場【主賽】— 5 回合心理與傳染博弈</p>
+                </div>
+
+                <div class="tut-cards">
+                    <div class="tut-card bio-purple-border">
+                        <div class="tut-icon">🎲</div>
+                        <div class="tut-body">
+                            <h4>1. 號碼抽籤與盲抽角色卡</h4>
+                            <p>開局每位玩家隨機抽取<span class="tut-purple">固有號碼（1～N 號）</span>，並依號碼順序盲抽秘密角色。完成角色專屬的<span class="tut-em">指定任務</span>即可觸發特殊能力！</p>
+                        </div>
+                    </div>
+
+                    <div class="tut-card bio-green-border">
+                        <div class="tut-icon">🧬</div>
+                        <div class="tut-body">
+                            <h4>2. 固有號碼環狀傳染（兩回合後發作死亡）</h4>
+                            <p>首名被恐怖分子感染者，次回合會傳染給<span class="tut-gold">相鄰號碼玩家</span>，並於<span class="tut-em">感染後第 2 個回合死亡</span>（例：6 號第 1 回合感染 $\rightarrow$ 第 2 回合傳染 5、7 號 $\rightarrow$ 6 號第 3 回合死亡，5、7 號第 4 回合死亡）。死亡角色移入荷官隔離房並公開角色。</p>
+                        </div>
+                    </div>
+
+                    <div class="tut-card">
+                        <div class="tut-icon">🔬</div>
+                        <div class="tut-body">
+                            <h4>3. 檢驗室【感染確診檢查】</h4>
+                            <p>每位玩家全場擁有 <span class="tut-gold">1 次前往檢驗室</span> 查詢自己是否受到感染的機會，檢查結果<span class="tut-em">僅本人知道</span>。每回合結束公開感染人數、死亡人數與治療劑進度。</p>
+                        </div>
+                    </div>
+
+                    <div class="tut-card bio-purple-border">
+                        <div class="tut-icon">🏆</div>
+                        <div class="tut-body">
+                            <h4>4. 三大陣營獲勝條件</h4>
+                            <p>• <span class="tut-purple">恐怖分子（2名）</span>：所有存活市民均受感染或死亡。<br>• <span class="tut-gold">市民陣營（市民5/研究員2/記者1）</span>：治療劑研發達 100% 或消滅所有恐怖分子。<br>• <span class="tut-em">中立（搜查官1/狂熱分子1）</span>：達成各自獨立任務條件！</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="btn-virus-tut-next" class="btn-primary-action virus-btn chamfer-sm" onclick="handleVirusTutorialNext()">前往人數與抽籤設定</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         遊戲二：《病毒遊戲》人數與玩家命名設定頁
+         ========================================================= -->
+    <section id="virus-setup-screen" class="full-overlay">
+        <div class="panel-frame-outer virus-theme chamfer-lg">
+            <div class="panel-frame-inner chamfer-lg">
+                <div class="overlay-top-nav">
+                    <button type="button" class="btn-back-lobby-link" onclick="returnToPlatformLobby()">← 返回平台大廳</button>
+                    <span class="overlay-game-crumb" style="color:#d8b4fe;">翁韶的計謀 · 病毒遊戲</span>
+                </div>
+
+                <div class="overlay-header virus-h">
+                    <h3>🧪 病毒遊戲：參賽人數與玩家名單</h3>
+                    <p>預設 12 人標準主賽配置（亦支援 9～11 人彈性開局）</p>
+                </div>
+
+                <div class="setup-section-label">
+                    選擇參賽人數
+                    <span id="virus-count-hint" style="color:#d8b4fe;">標準 12 人主賽</span>
+                </div>
+                <div class="count-selector four-cols" id="virus-count-selector">
+                    <button type="button" class="count-btn" data-vcount="9" onclick="selectVirusPlayerCount(9)">9人</button>
+                    <button type="button" class="count-btn" data-vcount="10" onclick="selectVirusPlayerCount(10)">10人</button>
+                    <button type="button" class="count-btn" data-vcount="11" onclick="selectVirusPlayerCount(11)">11人</button>
+                    <button type="button" class="count-btn virus-active" data-vcount="12" onclick="selectVirusPlayerCount(12)">12人</button>
+                </div>
+
+                <div class="role-mix-banner" id="virus-role-mix-banner"></div>
+
+                <div class="setup-section-label">
+                    玩家姓名設定
+                    <span>抽籤後將隨機分配 1～N 號</span>
+                </div>
+                <div class="name-inputs-list" id="virus-name-inputs"></div>
+
+                <button type="button" class="btn-primary-action virus-btn chamfer-sm" onclick="startVirusLotteryAndDraw()">🎲 抽籤號碼並開始盲抽角色</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         遊戲二：《病毒遊戲》號碼抽籤與依序盲抽角色卡界面
+         ========================================================= -->
+    <section id="virus-draw-screen" class="full-overlay">
+        <div class="panel-frame-outer virus-theme chamfer-lg">
+            <div class="panel-frame-inner chamfer-lg">
+                <div class="overlay-header virus-h">
+                    <h3>🎴 號碼抽籤與盲抽角色卡</h3>
+                    <p id="draw-progress-subtitle">請依抽籤號碼順序輪流確認秘密角色</p>
+                </div>
+
+                <div class="draw-card-stage" id="draw-card-stage"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         遊戲二：《病毒遊戲》主賽對戰舞台
+         ========================================================= -->
+    <div id="game-virus-war">
+        <div class="virus-left-col">
+            <div class="header-bar">
+                <div class="title-group">
+                    <button type="button" class="btn-home-hub" onclick="returnToPlatformLobby()" title="返回翁韶的計謀遊戲大廳">🏠 大廳</button>
+                    <h2>病毒遊戲</h2>
+                </div>
+                <div class="header-actions">
+                    <button type="button" class="btn-icon btn-duo-mode" id="btn-duo-mode-virus" onclick="cycleDuoLayoutMode()" title="切換雙欄佈局">📱 自動</button>
+                    <button type="button" class="btn-icon" onclick="openVirusTutorial()" title="遊戲規則">?</button>
+                    <button type="button" class="btn-icon" id="btn-sound-virus" onclick="toggleSound()" title="音效開關">🔊</button>
+                    <button type="button" class="btn-end chamfer-sm" onclick="confirmForceEndVirusGame()">結算</button>
+                </div>
+            </div>
+
+            <!-- 5回合進度與30分鐘倒數計時器 -->
+            <div class="virus-timer-card">
+                <div class="round-track" id="virus-round-track">
+                    <div class="round-step current" data-r="1">1R</div>
+                    <div class="round-step" data-r="2">2R</div>
+                    <div class="round-step" data-r="3">3R</div>
+                    <div class="round-step" data-r="4">4R</div>
+                    <div class="round-step" data-r="5">5R</div>
+                </div>
+                <div class="clock-row">
+                    <div>
+                        <div style="font-size:10px; color:#9ca3af; font-weight:800;">本回合剩餘時間（30分制）</div>
+                        <div class="clock-display" id="virus-clock-display">30:00</div>
+                    </div>
+                    <div class="clock-controls">
+                        <button type="button" class="btn-clock" id="btn-virus-pause" onclick="toggleVirusTimer()">⏸ 暫停</button>
+                        <button type="button" class="btn-clock" onclick="adjustVirusTimer(-300)">-5分</button>
+                        <button type="button" class="btn-next-round" onclick="advanceVirusRound()">⏭ 結束本回合</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每回合公開情報廣播（感染人數、死亡人數、治療劑進度） -->
+            <div class="virus-broadcast-grid">
+                <div class="broadcast-stat">
+                    <div class="broadcast-label">☣️ 當前感染人數</div>
+                    <div class="broadcast-val val-infected" id="vb-infected-count">0 人</div>
+                </div>
+                <div class="broadcast-stat">
+                    <div class="broadcast-label">💀 累計死亡人數</div>
+                    <div class="broadcast-val val-dead" id="vb-dead-count">0 人</div>
+                </div>
+                <div class="broadcast-stat">
+                    <div class="broadcast-label">💉 治療劑進度</div>
+                    <div class="broadcast-val val-cure" id="vb-cure-progress">0%</div>
+                    <div class="cure-bar-wrap"><div class="cure-bar-fill" id="vb-cure-bar"></div></div>
+                </div>
+            </div>
+
+            <!-- 荷官隔離房（死亡玩家公開區） -->
+            <div class="quarantine-box">
+                <div class="quarantine-header">
+                    <span>🚪 荷官隔離房（死亡角色公開名單）</span>
+                    <span id="quarantine-count-label">0 人隔離</span>
+                </div>
+                <div class="quarantine-list" id="virus-quarantine-list">尚無玩家死亡</div>
+            </div>
+        </div>
+
+        <div class="virus-right-col">
+            <!-- 1~12號固有號碼環狀座位圖 -->
+            <div class="virus-ring-container" id="virus-ring-container">
+                <div class="ring-center-info">
+                    <div class="ring-center-title" id="ring-center-round">第 1 回合進行中</div>
+                    <div class="ring-center-sub" id="ring-center-hint">相鄰號碼依序傳染<br>感染後第 2 回合發作死亡</div>
+                </div>
+            </div>
+
+            <!-- 秘密檢驗室與記者頭條快報按鈕 -->
+            <div class="virus-action-bar">
+                <button type="button" class="btn-secret-lab chamfer-sm" onclick="openSecretTerminalSelector()">🔬 進入秘密檢驗室 / 執行任務</button>
+                <button type="button" class="btn-headline-log chamfer-sm" onclick="openPublicNewsModal()">📰 公開情報與頭條</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 秘密檢驗室 / 個人終端彈窗 -->
+    <div class="modal-overlay" id="virus-terminal-modal">
+        <div class="modal-box virus-modal chamfer-md" id="virus-terminal-content"></div>
+    </div>
+
+    <!-- 公開情報與記者頭條彈窗 -->
+    <div class="modal-overlay" id="virus-news-modal">
+        <div class="modal-box virus-modal chamfer-md">
+            <h3>📰 回合戰況與頭條公告</h3>
+            <div class="result-list" id="virus-news-list"></div>
+            <button type="button" class="btn-cancel-modal" onclick="closePublicNewsModal()">關閉</button>
+        </div>
+    </div>
+
+    <!-- 病毒遊戲最終結算彈窗 -->
+    <div class="modal-overlay" id="virus-result-modal">
+        <div class="modal-box virus-modal chamfer-md">
+            <h3>🏆 《病毒遊戲》最終結算</h3>
+            <div class="winner-banner" id="virus-winner-text"></div>
+            <div class="result-list" id="virus-result-details"></div>
+            <div class="result-actions">
+                <div class="result-actions-row">
+                    <button type="button" onclick="restartVirusSamePlayers()" style="flex: 1.2; background: #9333ea; color: #ffffff; border: none; padding: 11px 8px; border-radius: 6px; font-size: 14px; font-weight: 800; cursor: pointer;">重新抽籤再戰</button>
+                    <button type="button" onclick="reopenVirusSetup()" style="flex: 1; background: #374151; color: #f3f4f6; border: 1px solid rgba(255,255,255,0.2); padding: 11px 8px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">重設人數／名單</button>
                 </div>
                 <button type="button" onclick="returnToPlatformLobby()" style="width: 100%; background: rgba(212, 175, 55, 0.16); color: #fde047; border: 1px solid rgba(212, 175, 55, 0.45); padding: 9px; border-radius: 6px; font-size: 13px; font-weight: 800; cursor: pointer;">🏠 返回「翁韶的計謀」遊戲大廳</button>
             </div>
@@ -2079,7 +2775,7 @@
         // ==========================================
         const platformLobbyElement = document.getElementById('platform-lobby');
         const gameTurfWarElement = document.getElementById('game-turf-war');
-        const virusPreviewModal = document.getElementById('virus-preview-modal');
+        const gameVirusWarElement = document.getElementById('game-virus-war');
 
         function launchTurfWar() {
             playTone('click');
@@ -2089,19 +2785,12 @@
             tutorialScreenElement.classList.add('visible');
         }
 
-        function openVirusPreviewModal() {
+        function launchVirusGame() {
             playTone('click');
-            virusPreviewModal.style.display = 'flex';
-        }
-
-        function closeVirusPreviewModal() {
-            playTone('click');
-            virusPreviewModal.style.display = 'none';
-        }
-
-        function confirmReturnToLobby() {
-            playTone('click');
-            returnToPlatformLobby();
+            platformLobbyElement.classList.add('hidden');
+            isVirusMatchStarted = false;
+            document.getElementById('btn-virus-tut-next').textContent = '前往人數與抽籤設定';
+            document.getElementById('virus-tutorial-screen').classList.add('visible');
         }
 
         function returnToPlatformLobby() {
@@ -2109,13 +2798,23 @@
             hideDragGhost();
             clearPinnedPreview();
             isMatchStarted = false;
+            stopVirusTimer();
+            isVirusMatchStarted = false;
 
             tutorialScreenElement.classList.remove('visible');
             setupScreenElement.classList.remove('visible');
+            document.getElementById('virus-tutorial-screen').classList.remove('visible');
+            document.getElementById('virus-setup-screen').classList.remove('visible');
+            document.getElementById('virus-draw-screen').classList.remove('visible');
+
             document.getElementById('gift-modal').style.display = 'none';
             document.getElementById('result-modal').style.display = 'none';
-            gameTurfWarElement.classList.remove('active-game');
+            document.getElementById('virus-terminal-modal').style.display = 'none';
+            document.getElementById('virus-news-modal').style.display = 'none';
+            document.getElementById('virus-result-modal').style.display = 'none';
 
+            gameTurfWarElement.classList.remove('active-game');
+            gameVirusWarElement.classList.remove('active-game');
             platformLobbyElement.classList.remove('hidden');
         }
 
@@ -2139,7 +2838,6 @@
         const queueListElement = document.getElementById('queue-list');
         const confirmBarElement = document.getElementById('confirm-bar');
         const btnConfirmPlace = document.getElementById('btn-confirm-place');
-        const btnDuoMode = document.getElementById('btn-duo-mode');
         const toastElement = document.getElementById('toast');
 
         const rows = 20;
@@ -2159,16 +2857,13 @@
             document.body.classList.remove('duo-auto', 'duo-split', 'duo-single');
             document.body.classList.add(`duo-${mode}`);
 
-            if (mode === 'auto') {
-                btnDuoMode.textContent = '📱 自動';
-                showToast('📱 已切換為 iPhone Duo 自動感應佈局');
-            } else if (mode === 'split') {
-                btnDuoMode.textContent = '📖 雙欄';
-                showToast('📖 已鎖定 7.6 吋展開雙欄佈局');
-            } else {
-                btnDuoMode.textContent = '📱 單欄';
-                showToast('📱 已鎖定 5.4 吋摺合單欄佈局');
-            }
+            const label = mode === 'auto' ? '📱 自動' : (mode === 'split' ? '📖 雙欄' : '📱 單欄');
+            document.getElementById('btn-duo-mode').textContent = label;
+            document.getElementById('btn-duo-mode-virus').textContent = label;
+
+            if (mode === 'auto') showToast('📱 已切換為 iPhone Duo 自動感應佈局');
+            else if (mode === 'split') showToast('📖 已鎖定展開雙欄佈局');
+            else showToast('📱 已鎖定摺合單欄佈局');
         }
 
         const playerPresets = [
@@ -2269,7 +2964,7 @@
             syncSetupInputsToCache();
             selectedPlayerCount = count;
 
-            document.querySelectorAll('.count-btn').forEach(btn => {
+            document.querySelectorAll('#count-selector .count-btn').forEach(btn => {
                 btn.classList.toggle('active', Number(btn.dataset.count) === count);
             });
             document.getElementById('selected-count-hint').textContent = `目前選擇：${count} 人局`;
@@ -2432,6 +3127,7 @@
             soundEnabled = !soundEnabled;
             const icon = soundEnabled ? '🔊' : '🔇';
             document.getElementById('btn-sound').textContent = icon;
+            document.getElementById('btn-sound-virus').textContent = icon;
             document.getElementById('btn-sound-lobby').textContent = `${icon} 音效`;
         }
 
@@ -2476,12 +3172,9 @@
         function showToast(msg) {
             toastElement.textContent = msg;
             toastElement.classList.add('show');
-            setTimeout(() => toastElement.classList.remove('show'), 2500);
+            setTimeout(() => toastElement.classList.remove('show'), 2600);
         }
 
-        // ==========================================
-        // 動態生成記分板（支援個人混戰 & 團體兩隊）
-        // ==========================================
         function renderScoreboard() {
             scoreboardElement.innerHTML = '';
             const isTeam = gameMode === 'team';
@@ -2538,9 +3231,6 @@
             document.getElementById('team-card-1').classList.toggle('active-team', curTeam === 1);
         }
 
-        // ==========================================
-        // 預告列與按鈕狀態
-        // ==========================================
         function renderUpcomingQueue() {
             queueListElement.innerHTML = '';
             queueBarElement.classList.toggle('swap-active', isSwapping);
@@ -2626,9 +3316,6 @@
             }
         }
 
-        // ==========================================
-        // 草皮調換券
-        // ==========================================
         function toggleSwapMode() {
             if (isStealing) return;
             const player = players[currentPlayerIndex];
@@ -2710,9 +3397,6 @@
             showToast(`🎁 ${sender.name} 將調換券贈送給了 ${receiver.name}！`);
         }
 
-        // ==========================================
-        // 回合推進
-        // ==========================================
         function nextTurn() {
             isSwapping = false;
             clearPinnedPreview();
@@ -2734,9 +3418,6 @@
             updateControlButtons();
         }
 
-        // ==========================================
-        // 物理拼圖外框與 5x5 演算法（支援個人與團體雙模式）
-        // ==========================================
         function updatePieceContours() {
             if (!cells || cells.length !== rows) return;
             const seenPieces = new Set();
@@ -3078,7 +3759,6 @@
             void boardElement.offsetHeight;
         }
 
-        // --- 旋轉、翻轉與托盤草皮渲染 ---
         function rotateShape() {
             if (isStealing || isSwapping) return;
             playTone('click');
@@ -3187,9 +3867,6 @@
             }
         }
 
-        // ==========================================
-        // iPhone Duo 觸控 / Apple Pencil / 滑鼠三模操控引擎
-        // ==========================================
         let activeDragSource = null;
         let touchStartX = 0;
         let touchStartY = 0;
@@ -3500,7 +4177,6 @@
             onInteractionEnd(e.clientX, e.clientY, false);
         });
 
-        // --- 搶奪與放置結算 ---
         function countStealableTargets() {
             let count = 0;
             for (let r = 0; r < rows; r++) {
@@ -3594,6 +4270,981 @@
             } else {
                 nextTurn();
             }
+        }
+
+        // =========================================================================
+        // 遊戲二：《病毒遊戲》(Virus Game — 魔鬼的計謀第一場主賽) 完整引擎
+        // =========================================================================
+        let isVirusMatchStarted = false;
+        let virusPlayerCount = 12;
+        let virusSavedNames = Array.from({ length: 12 }, (_, i) => `參賽者 ${i + 1}`);
+        let virusPlayers = []; // 按固有號碼 1..N 排序的玩家陣列
+        let virusDrawIndex = 0;
+        let virusDrawRevealed = false;
+
+        let virusRound = 1; // 1 ~ 5
+        let virusSecondsLeft = 30 * 60; // 30分鐘 = 1800秒
+        let virusTimerInterval = null;
+        let virusTimerPaused = false;
+        let virusCureProgress = 0; // 0 ~ 100 (每格 +25%)
+        let virusPublicLogs = [];
+        let virusRoundTerroristTarget = null; // 本回合恐怖分子秘密指定的初始感染者號碼
+        let virusRoundInvestigated = {}; // 搜查官每回合查驗紀錄
+
+        const VIRUS_ROLES = {
+            terrorist: {
+                key: 'terrorist',
+                name: '恐怖分子',
+                faction: 'terrorist',
+                factionLabel: '恐怖分子陣營',
+                cardClass: '',
+                mission: '【秘密散播】每回合在秘密終端與同伴秘密指定 1 名目標投放初始病毒（首回合必選）。恐怖分子自身免疫病毒致死。',
+                ability: '初始病毒投放、同伴互認、免疫病毒發作死亡。',
+                winCond: '使場上所有存活的市民陣營玩家皆處於感染狀態或死亡。'
+            },
+            researcher: {
+                key: 'researcher',
+                name: '研究員',
+                faction: 'citizen',
+                factionLabel: '市民陣營',
+                cardClass: 'citizen-card',
+                mission: '【潔淨樣本研發】在「未被感染」的狀態下進入檢驗室提交血液樣本，觸發治療劑研發能力（每次推進 +25% 進度）。',
+                ability: '推進治療劑研發進度（若自身已染疫則樣本受污染無法推進）。',
+                winCond: '治療劑研發進度達到 100%，或所有恐怖分子均死亡。'
+            },
+            journalist: {
+                key: 'journalist',
+                name: '記者',
+                faction: 'citizen',
+                factionLabel: '市民陣營',
+                cardClass: 'citizen-card',
+                mission: '【獨家追蹤報導】在檢驗室鎖定 1 名玩家進行深度採訪，觸發查明其真實角色之能力（全場限 1 次）。',
+                ability: '查驗 1 名玩家的真實角色，並可選擇是否向全體發布頭條公開。',
+                winCond: '治療劑研發進度達到 100%，或所有恐怖分子均死亡。'
+            },
+            citizen: {
+                key: 'citizen',
+                name: '市民',
+                faction: 'citizen',
+                factionLabel: '市民陣營',
+                cardClass: 'citizen-card',
+                mission: '【社區防疫警戒】在檢驗室執行一次社區警戒任務，可額外獲得 1 次免費病毒快篩確認機會。',
+                ability: '完成任務後可額外進行 1 次感染確診檢查，協助鎖定傳染鏈。',
+                winCond: '治療劑研發進度達到 100%，或所有恐怖分子均死亡。'
+            },
+            investigator: {
+                key: 'investigator',
+                name: '搜查官',
+                faction: 'neutral',
+                factionLabel: '中立陣營',
+                cardClass: 'neutral-card',
+                mission: '【鎖定幕後黑手】每回合在秘密終端搜查 1 名玩家是否為恐怖分子，累計查出 2 名恐怖分子即完成任務。',
+                ability: '每回合秘密搜查 1 名玩家是否屬於恐怖分子陣營。',
+                winCond: '在自己存活的前提下，成功搜查鎖定全部 2 名恐怖分子（可與勝方共同或獨立勝出）。'
+            },
+            fanatic: {
+                key: 'fanatic',
+                name: '狂熱分子',
+                faction: 'neutral',
+                factionLabel: '中立陣營',
+                cardClass: 'neutral-card',
+                mission: '【病毒殉道儀式】在自己處於「已感染」狀態時進入秘密終端啟動狂熱擴散，使病毒向左右各延伸傳染 2 格。',
+                ability: '染疫後啟動超級傳播，擴大環狀傳染範圍。',
+                winCond: '自己因感染病毒而發作死亡，且至少成功將病毒傳染給 1 名玩家（達成獨立勝利）。'
+            }
+        };
+
+        function getVirusRoleDeck(count) {
+            const citizenCount = Math.max(2, count - 7); // 12人->5市民, 11人->4, 10人->3, 9人->2
+            const deck = [
+                'terrorist', 'terrorist',
+                'researcher', 'researcher',
+                'journalist',
+                'investigator',
+                'fanatic'
+            ];
+            for (let i = 0; i < citizenCount; i++) {
+                deck.push('citizen');
+            }
+            return deck;
+        }
+
+        function openVirusTutorial() {
+            playTone('click');
+            document.getElementById('btn-virus-tut-next').textContent = isVirusMatchStarted ? '返回對戰舞台' : '前往人數與抽籤設定';
+            document.getElementById('virus-tutorial-screen').classList.add('visible');
+        }
+
+        function handleVirusTutorialNext() {
+            playTone('click');
+            document.getElementById('virus-tutorial-screen').classList.remove('visible');
+            if (!isVirusMatchStarted) {
+                openVirusSetupScreen();
+            }
+        }
+
+        function openVirusSetupScreen() {
+            selectVirusPlayerCount(virusPlayerCount);
+            document.getElementById('virus-setup-screen').classList.add('visible');
+        }
+
+        function syncVirusNamesFromInputs() {
+            const inputs = document.querySelectorAll('#virus-name-inputs .player-name-input');
+            inputs.forEach(inp => {
+                const idx = Number(inp.dataset.vidx);
+                if (!Number.isNaN(idx)) {
+                    virusSavedNames[idx] = inp.value;
+                }
+            });
+        }
+
+        function selectVirusPlayerCount(count) {
+            playTone('click');
+            syncVirusNamesFromInputs();
+            virusPlayerCount = count;
+
+            document.querySelectorAll('#virus-count-selector .count-btn').forEach(btn => {
+                btn.classList.toggle('virus-active', Number(btn.dataset.vcount) === count);
+            });
+            document.getElementById('virus-count-hint').textContent = count === 12 ? '標準 12 人主賽' : `${count} 人彈性局`;
+
+            const citNum = count - 7;
+            document.getElementById('virus-role-mix-banner').innerHTML = `
+                <div><strong>本局角色配置（共 ${count} 張盲抽卡）：</strong></div>
+                <div>• <span class="role-pill-t">恐怖分子 (2名)</span></div>
+                <div>• <span class="role-pill-c">市民陣營 (${citNum + 3}名)</span>：市民 (${citNum}名)、研究員 (2名)、記者 (1名)</div>
+                <div>• <span class="role-pill-n">中立陣營 (2名)</span>：搜查官 (1名)、狂熱分子 (1名)</div>
+            `;
+
+            const listEl = document.getElementById('virus-name-inputs');
+            listEl.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const row = document.createElement('div');
+                row.className = 'name-row';
+                row.innerHTML = `
+                    <div class="player-color-badge" style="min-width:54px; color:#d8b4fe;">玩家 ${i + 1}</div>
+                    <input type="text" class="player-name-input" data-vidx="${i}" maxlength="8" placeholder="參賽者 ${i + 1}" value="${virusSavedNames[i] || `參賽者 ${i + 1}`}">
+                `;
+                listEl.appendChild(row);
+            }
+        }
+
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function startVirusLotteryAndDraw() {
+            if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+            }
+            window.scrollTo(0, 0);
+            syncVirusNamesFromInputs();
+
+            const names = [];
+            for (let i = 0; i < virusPlayerCount; i++) {
+                const raw = (virusSavedNames[i] || '').trim();
+                const finalName = raw || `參賽者 ${i + 1}`;
+                virusSavedNames[i] = finalName;
+                names.push(finalName);
+            }
+
+            // 1. 抽籤固有號碼 (1 ~ N)
+            const shuffledNames = shuffleArray(names);
+            // 2. 洗牌角色卡
+            const shuffledRoles = shuffleArray(getVirusRoleDeck(virusPlayerCount));
+
+            virusPlayers = shuffledNames.map((name, idx) => ({
+                seatNumber: idx + 1, // 固有號碼 1..N
+                name,
+                roleKey: shuffledRoles[idx],
+                alive: true,
+                diedInRound: null,
+                infectedRound: null, // 第幾回合感染（null 表示未感染）
+                labChecksLeft: 1, // 檢驗室確診檢查次數（預設 1 次）
+                missionDone: false,
+                abilityUsed: false,
+                publiclyRevealed: false,
+                spreadCount: 0, // 成功傳染給他人的次數
+                superSpreadActive: false, // 狂熱分子超級傳播標記
+                foundTerrorists: [] // 搜查官已鎖定的恐怖分子號碼
+            }));
+
+            virusDrawIndex = 0;
+            virusDrawRevealed = false;
+
+            document.getElementById('virus-setup-screen').classList.remove('visible');
+            document.getElementById('virus-draw-screen').classList.add('visible');
+            playTone('achieve');
+            renderVirusDrawStep();
+        }
+
+        function renderVirusDrawStep() {
+            const stage = document.getElementById('draw-card-stage');
+            const p = virusPlayers[virusDrawIndex];
+            const total = virusPlayers.length;
+            document.getElementById('draw-progress-subtitle').textContent = `抽籤進度：第 ${virusDrawIndex + 1} / ${total} 位（請按號碼順序查看）`;
+
+            if (!virusDrawRevealed) {
+                stage.innerHTML = `
+                    <div style="font-size:12px; color:#9ca3af; font-weight:800;">請將裝置交給</div>
+                    <div style="font-size:24px; font-weight:900; color:#ffffff; margin-top:4px;">${p.name}</div>
+                    <div class="seat-number-emblem"><span>${p.seatNumber}號</span></div>
+                    <p style="font-size:12.5px; color:#d1d5db; line-height:1.6; margin:0 0 18px 0;">
+                        你抽中的固有號碼為 <strong style="color:#d8ff2e;">第 ${p.seatNumber} 號</strong>。<br>
+                        請確認周圍沒有其他玩家偷看螢幕，再點擊下方盲抽你的角色卡。
+                    </p>
+                    <button type="button" class="btn-primary-action virus-btn chamfer-sm" onclick="revealCurrentDrawRole()">👁️ 確認本人，盲抽角色卡</button>
+                `;
+                return;
+            }
+
+            const roleInfo = VIRUS_ROLES[p.roleKey];
+            let partnerHtml = '';
+            if (p.roleKey === 'terrorist') {
+                const partner = virusPlayers.find(other => other.roleKey === 'terrorist' && other.seatNumber !== p.seatNumber);
+                if (partner) {
+                    partnerHtml = `<div class="partner-callout">🤝 你的恐怖分子同伴是：<strong>${partner.seatNumber}號 · ${partner.name}</strong></div>`;
+                }
+            } else if (p.roleKey === 'researcher') {
+                const partner = virusPlayers.find(other => other.roleKey === 'researcher' && other.seatNumber !== p.seatNumber);
+                if (partner) {
+                    partnerHtml = `<div class="partner-callout" style="border-color:#facc15; background:rgba(234,179,8,0.14); color:#fef08a;">🔬 另一位研究員同伴是：<strong>${partner.seatNumber}號 · ${partner.name}</strong></div>`;
+                }
+            }
+
+            const isLast = virusDrawIndex === total - 1;
+            const nextBtnText = isLast ? '☣️ 全部抽畢，正式開始第 1 回合' : `🔒 記住了，隱藏並交給 ${virusPlayers[virusDrawIndex + 1].seatNumber}號 (${virusPlayers[virusDrawIndex + 1].name})`;
+
+            stage.innerHTML = `
+                <div style="font-size:12px; color:#d8b4fe; font-weight:800;">${p.seatNumber}號 · ${p.name} 的秘密身分</div>
+                <div class="secret-role-card ${roleInfo.cardClass}">
+                    <div class="role-card-header">
+                        <span class="role-title-big">${roleInfo.name}</span>
+                        <span class="role-faction-badge faction-${roleInfo.faction}">${roleInfo.factionLabel}</span>
+                    </div>
+                    <div class="role-detail-item"><strong>🎯 指定任務：</strong>${roleInfo.mission}</div>
+                    <div class="role-detail-item"><strong>⚡ 觸發能力：</strong>${roleInfo.ability}</div>
+                    <div class="role-detail-item" style="margin-bottom:0;"><strong>🏆 獲勝條件：</strong>${roleInfo.winCond}</div>
+                    ${partnerHtml}
+                </div>
+                <button type="button" class="btn-primary-action chamfer-sm" onclick="confirmNextDrawPlayer()">${nextBtnText}</button>
+            `;
+        }
+
+        function revealCurrentDrawRole() {
+            playTone('click');
+            virusDrawRevealed = true;
+            renderVirusDrawStep();
+        }
+
+        function confirmNextDrawPlayer() {
+            playTone('click');
+            if (virusDrawIndex < virusPlayers.length - 1) {
+                virusDrawIndex++;
+                virusDrawRevealed = false;
+                renderVirusDrawStep();
+            } else {
+                document.getElementById('virus-draw-screen').classList.remove('visible');
+                beginVirusMainMatch();
+            }
+        }
+
+        function beginVirusMainMatch() {
+            isVirusMatchStarted = true;
+            virusRound = 1;
+            virusSecondsLeft = 30 * 60;
+            virusTimerPaused = false;
+            virusCureProgress = 0;
+            virusRoundTerroristTarget = null;
+            virusRoundInvestigated = {};
+            virusPublicLogs = [
+                '📢 【第 1 回合開始】請恐怖分子前往「秘密檢驗室」指定首名初始感染者！'
+            ];
+
+            gameVirusWarElement.classList.add('active-game');
+            playTone('achieve');
+            renderVirusBoard();
+            startVirusTimer();
+            showToast('☣️ 第 1 回合開始！倒數 30 分鐘');
+        }
+
+        function startVirusTimer() {
+            stopVirusTimer();
+            virusTimerInterval = setInterval(() => {
+                if (!isVirusMatchStarted || virusTimerPaused) return;
+                if (virusSecondsLeft > 0) {
+                    virusSecondsLeft--;
+                    updateVirusClockUI();
+                } else {
+                    stopVirusTimer();
+                    showToast('⏰ 本回合 30 分鐘時間到！請結算本回合');
+                }
+            }, 1000);
+        }
+
+        function stopVirusTimer() {
+            if (virusTimerInterval) {
+                clearInterval(virusTimerInterval);
+                virusTimerInterval = null;
+            }
+        }
+
+        function toggleVirusTimer() {
+            playTone('click');
+            virusTimerPaused = !virusTimerPaused;
+            document.getElementById('btn-virus-pause').textContent = virusTimerPaused ? '▶ 繼續' : '⏸ 暫停';
+        }
+
+        function adjustVirusTimer(deltaSec) {
+            playTone('click');
+            virusSecondsLeft = Math.max(0, virusSecondsLeft + deltaSec);
+            updateVirusClockUI();
+        }
+
+        function updateVirusClockUI() {
+            const mins = Math.floor(virusSecondsLeft / 60);
+            const secs = virusSecondsLeft % 60;
+            document.getElementById('virus-clock-display').textContent =
+                `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function renderVirusBoard() {
+            // 1. 更新回合進度條
+            document.querySelectorAll('#virus-round-track .round-step').forEach(el => {
+                const r = Number(el.dataset.r);
+                el.classList.remove('current', 'done');
+                if (r < virusRound) el.classList.add('done');
+                else if (r === virusRound) el.classList.add('current');
+            });
+
+            updateVirusClockUI();
+            document.getElementById('ring-center-round').textContent = `第 ${virusRound} 回合進行中`;
+
+            // 2. 公開數據統計（僅公開數量，不公開誰被感染）
+            const infectedAliveCount = virusPlayers.filter(p => p.alive && p.infectedRound !== null).length;
+            const deadPlayers = virusPlayers.filter(p => !p.alive);
+
+            document.getElementById('vb-infected-count').textContent = `${infectedAliveCount} 人`;
+            document.getElementById('vb-dead-count').textContent = `${deadPlayers.length} 人`;
+            document.getElementById('vb-cure-progress').textContent = `${virusCureProgress}%`;
+            document.getElementById('vb-cure-bar').style.width = `${virusCureProgress}%`;
+
+            // 3. 荷官隔離房名單
+            const qList = document.getElementById('virus-quarantine-list');
+            document.getElementById('quarantine-count-label').textContent = `${deadPlayers.length} 人隔離`;
+            if (deadPlayers.length === 0) {
+                qList.innerHTML = '<span>尚無玩家死亡</span>';
+            } else {
+                qList.innerHTML = deadPlayers.map(dp => {
+                    const rName = VIRUS_ROLES[dp.roleKey].name;
+                    return `<span class="dead-pill">${dp.seatNumber}號 ${dp.name}｜${rName} (${dp.diedInRound}R死)</span>`;
+                }).join('');
+            }
+
+            // 4. 繪製 1~N 號環狀座位圖（還原節目圖三視覺）
+            const container = document.getElementById('virus-ring-container');
+            container.querySelectorAll('.ring-node').forEach(n => n.remove());
+
+            const total = virusPlayers.length;
+            const radiusX = 39; // %
+            const radiusY = 38; // %
+
+            virusPlayers.forEach((p, idx) => {
+                // 1號在正上方 (-90度)，順時針排列
+                const angle = (-Math.PI / 2) + (2 * Math.PI * idx) / total;
+                const xPct = 50 + radiusX * Math.cos(angle);
+                const yPct = 50 + radiusY * Math.sin(angle);
+
+                const node = document.createElement('div');
+                node.className = `ring-node${p.alive ? '' : ' dead'}`;
+                node.style.left = `${xPct}%`;
+                node.style.top = `${yPct}%`;
+                node.onclick = () => openSecretTerminalForPlayer(p.seatNumber);
+
+                const roleName = VIRUS_ROLES[p.roleKey].name;
+                const revealedTag = (!p.alive || p.publiclyRevealed)
+                    ? `<div class="node-revealed-tag">${roleName}</div>`
+                    : '';
+                const deadStamp = !p.alive ? `<div class="node-dead-stamp">DEAD</div>` : '';
+
+                node.innerHTML = `
+                    <div class="node-diamond"><span>${p.seatNumber}</span></div>
+                    ${deadStamp}
+                    <div class="node-name">${p.name}</div>
+                    ${revealedTag}
+                `;
+                container.appendChild(node);
+            });
+        }
+
+        // ==========================================
+        // 秘密檢驗室 & 個人行動終端
+        // ==========================================
+        let selectedTerminalSeat = null;
+
+        function openSecretTerminalSelector() {
+            playTone('click');
+            const modal = document.getElementById('virus-terminal-modal');
+            const box = document.getElementById('virus-terminal-content');
+
+            const seatsHtml = virusPlayers.map(p => `
+                <button type="button" class="term-seat-btn${p.alive ? '' : ' dead-seat'}" onclick="openSecretTerminalForPlayer(${p.seatNumber})">
+                    ${p.seatNumber}號 · ${p.name}${p.alive ? '' : ' (已死亡)'}
+                </button>
+            `).join('');
+
+            box.innerHTML = `
+                <h3>🔬 秘密檢驗室終端</h3>
+                <p style="font-size:12.5px; color:#9ca3af; margin:0 0 8px 0;">請選擇你的固有號碼進入個人秘密終端（請勿偷看他人號碼）：</p>
+                <div class="terminal-player-grid">${seatsHtml}</div>
+                <button type="button" class="btn-cancel-modal" onclick="closeVirusTerminal()">關閉終端</button>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function openSecretTerminalForPlayer(seatNum) {
+            playTone('click');
+            selectedTerminalSeat = seatNum;
+            const p = virusPlayers.find(x => x.seatNumber === seatNum);
+            if (!p) return;
+
+            const modal = document.getElementById('virus-terminal-modal');
+            const box = document.getElementById('virus-terminal-content');
+
+            // 隱私防偷看過渡幕簾
+            box.innerHTML = `
+                <h3>🔒 身分隱私確認</h3>
+                <p style="font-size:14px; color:#e5e7eb; line-height:1.6; margin:12px 0 18px 0;">
+                    即將開啟 <strong style="color:#d8ff2e; font-size:17px;">${p.seatNumber}號 · ${p.name}</strong> 的秘密終端。<br>
+                    請確認周圍沒有其他玩家正在觀看螢幕！
+                </p>
+                <button type="button" class="btn-primary-action virus-btn chamfer-sm" style="margin-bottom:8px;" onclick="renderPlayerSecretTerminal(${p.seatNumber})">👁️ 確認無人偷看，開啟終端</button>
+                <button type="button" class="btn-cancel-modal" onclick="closeVirusTerminal()">取消返回</button>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function renderPlayerSecretTerminal(seatNum, labResultHtml = '') {
+            const p = virusPlayers.find(x => x.seatNumber === seatNum);
+            if (!p) return;
+            const roleInfo = VIRUS_ROLES[p.roleKey];
+            const box = document.getElementById('virus-terminal-content');
+
+            // 1. 檢驗室確診檢查區塊
+            let labSection = '';
+            if (!p.alive) {
+                labSection = `<div class="lab-result-box positive">💀 你已在第 ${p.diedInRound} 回合發作死亡並隔離在荷官房，無法再執行行動。</div>`;
+            } else {
+                const checkBtn = p.labChecksLeft > 0
+                    ? `<button type="button" class="btn-primary-action chamfer-sm" style="background:#0284c7; color:#ffffff; margin-bottom:8px;" onclick="runLabDiagnosis(${p.seatNumber})">🧪 使用【感染確診檢查】（剩餘 ${p.labChecksLeft} 次）</button>`
+                    : `<button type="button" class="btn-cancel-modal" disabled style="opacity:0.45; margin-bottom:8px;">🧪 【感染確診檢查】次數已用畢</button>`;
+                labSection = `${checkBtn}${labResultHtml}`;
+            }
+
+            // 2. 角色專屬指定任務與能力區塊
+            let roleActionSection = '';
+            if (p.alive) {
+                if (p.roleKey === 'terrorist') {
+                    const currentTargetText = virusRoundTerroristTarget
+                        ? `本回合已秘密鎖定目標：<strong>${virusRoundTerroristTarget}號</strong>（可於本回合結束前更改）`
+                        : '本回合尚未指定初始病毒投放目標！';
+                    const targetBtns = virusPlayers
+                        .filter(t => t.alive && t.roleKey !== 'terrorist')
+                        .map(t => `<button type="button" class="term-seat-btn${virusRoundTerroristTarget === t.seatNumber ? ' selected' : ''}" onclick="setTerroristTarget(${p.seatNumber}, ${t.seatNumber})">${t.seatNumber}號 ${t.name}</button>`)
+                        .join('');
+                    roleActionSection = `
+                        <div style="background:#15121e; border:1px solid #a855f7; border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
+                            <div style="font-size:12.5px; font-weight:900; color:#e9d5ff; margin-bottom:4px;">☣️ 恐怖分子秘密任務：投放初始病毒</div>
+                            <div style="font-size:11.5px; color:#cbd5e1; margin-bottom:8px;">${currentTargetText}</div>
+                            <div class="terminal-player-grid">${targetBtns}</div>
+                        </div>
+                    `;
+                } else if (p.roleKey === 'researcher') {
+                    const doneThisRound = p.abilityUsed === virusRound;
+                    roleActionSection = `
+                        <div style="background:#141a21; border:1px solid #38bdf8; border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
+                            <div style="font-size:12.5px; font-weight:900; color:#7dd3fc; margin-bottom:4px;">💉 研究員指定任務：採集潔淨血液研發治療劑</div>
+                            <div style="font-size:11.5px; color:#cbd5e1; margin-bottom:8px;">必須在「未受感染」狀態下採集樣本，每次可推進治療劑進度 +25%。</div>
+                            <button type="button" class="btn-primary-action chamfer-sm" ${doneThisRound ? 'disabled style="opacity:0.45;"' : ''} onclick="executeResearcherTask(${p.seatNumber})">
+                                ${doneThisRound ? '✅ 本回合已完成樣本研發' : '🧬 提交樣本並推進治療劑研發'}
+                            </button>
+                        </div>
+                    `;
+                } else if (p.roleKey === 'journalist') {
+                    if (p.missionDone) {
+                        roleActionSection = `<div style="background:#141a21; border:1px solid #facc15; border-radius:8px; padding:10px; margin-top:8px; font-size:12px; color:#fef08a;">📰 你已完成獨家採訪任務！</div>`;
+                    } else {
+                        const targetBtns = virusPlayers
+                            .filter(t => t.seatNumber !== p.seatNumber)
+                            .map(t => `<button type="button" class="term-seat-btn" onclick="executeJournalistScoop(${p.seatNumber}, ${t.seatNumber})">${t.seatNumber}號 ${t.name}</button>`)
+                            .join('');
+                        roleActionSection = `
+                            <div style="background:#1c1a14; border:1px solid #eab308; border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
+                                <div style="font-size:12.5px; font-weight:900; color:#fde047; margin-bottom:4px;">📰 記者指定任務：獨家角色採訪（全場限 1 次）</div>
+                                <div style="font-size:11.5px; color:#cbd5e1; margin-bottom:6px;">選擇 1 名玩家查明其真實角色：</div>
+                                <div class="terminal-player-grid">${targetBtns}</div>
+                            </div>
+                        `;
+                    }
+                } else if (p.roleKey === 'investigator') {
+                    const checkedThisRound = virusRoundInvestigated[virusRound];
+                    const targetBtns = virusPlayers
+                        .filter(t => t.alive && t.seatNumber !== p.seatNumber)
+                        .map(t => `<button type="button" class="term-seat-btn" ${checkedThisRound ? 'disabled style="opacity:0.45;"' : ''} onclick="executeInvestigatorSearch(${p.seatNumber}, ${t.seatNumber})">${t.seatNumber}號 ${t.name}</button>`)
+                        .join('');
+                    roleActionSection = `
+                        <div style="background:#132026; border:1px solid #06b6d4; border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
+                            <div style="font-size:12.5px; font-weight:900; color:#67e8f9; margin-bottom:4px;">🕵️ 搜查官指定任務：秘密搜查恐怖分子（已鎖定 ${p.foundTerrorists.length}/2 名）</div>
+                            <div style="font-size:11.5px; color:#cbd5e1; margin-bottom:6px;">${checkedThisRound ? '本回合已執行過搜查。' : '每回合可秘密核查 1 名玩家是否為恐怖分子：'}</div>
+                            <div class="terminal-player-grid">${targetBtns}</div>
+                        </div>
+                    `;
+                } else if (p.roleKey === 'fanatic') {
+                    roleActionSection = `
+                        <div style="background:#1b1326; border:1px solid #c084fc; border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
+                            <div style="font-size:12.5px; font-weight:900; color:#e9d5ff; margin-bottom:4px;">🔮 狂熱分子指定任務：病毒殉道擴散</div>
+                            <div style="font-size:11.5px; color:#cbd5e1; margin-bottom:8px;">須在自身已受感染時啟動，使病毒向左右各延伸 2 格傳染。</div>
+                            <button type="button" class="btn-primary-action virus-btn chamfer-sm" ${p.superSpreadActive ? 'disabled style="opacity:0.5;"' : ''} onclick="executeFanaticRitual(${p.seatNumber})">
+                                ${p.superSpreadActive ? '☣️ 超級傳播已啟動' : '☣️ 啟動狂熱超級傳播'}
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    roleActionSection = `
+                        <div style="background:#181b22; border:1px solid rgba(255,255,255,0.16); border-radius:8px; padding:10px; margin-top:8px; text-align:left;">
+                            <div style="font-size:12.5px; font-weight:900; color:#fde047; margin-bottom:4px;">🛡️ 市民指定任務：社區防疫巡邏</div>
+                            <div style="font-size:11.5px; color:#cbd5e1; margin-bottom:8px;">完成巡邏任務可額外獲得 1 次【感染確診檢查】機會（全場限 1 次）。</div>
+                            <button type="button" class="btn-primary-action chamfer-sm" ${p.missionDone ? 'disabled style="opacity:0.45;"' : ''} onclick="executeCitizenPatrol(${p.seatNumber})">
+                                ${p.missionDone ? '✅ 已完成巡邏（已領取額外快篩）' : '🚨 完成社區巡邏並領取快篩'}
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+
+            box.innerHTML = `
+                <h3>🔐 ${p.seatNumber}號 · ${p.name} 的秘密終端</h3>
+                <div class="secret-role-card ${roleInfo.cardClass}" style="margin:8px 0;">
+                    <div class="role-card-header">
+                        <span class="role-title-big">${roleInfo.name}</span>
+                        <span class="role-faction-badge faction-${roleInfo.faction}">${roleInfo.factionLabel}</span>
+                    </div>
+                    <div class="role-detail-item" style="margin-bottom:0;"><strong>🏆 獲勝條件：</strong>${roleInfo.winCond}</div>
+                </div>
+                ${labSection}
+                ${roleActionSection}
+                <button type="button" class="btn-cancel-modal" style="margin-top:10px; background:#dc2626; color:#ffffff;" onclick="closeVirusTerminal()">🔒 清除畫面並離開檢驗室</button>
+            `;
+        }
+
+        function closeVirusTerminal() {
+            playTone('click');
+            selectedTerminalSeat = null;
+            document.getElementById('virus-terminal-modal').style.display = 'none';
+        }
+
+        function runLabDiagnosis(seatNum) {
+            const p = virusPlayers.find(x => x.seatNumber === seatNum);
+            if (!p || p.labChecksLeft <= 0) return;
+
+            playTone('click');
+            p.labChecksLeft--;
+
+            let resultHtml = '';
+            if (p.infectedRound !== null) {
+                const deathR = p.infectedRound + 2;
+                resultHtml = `
+                    <div class="lab-result-box positive">
+                        <div style="font-size:15px; font-weight:900; color:#fca5a5;">☣️ 確診結果：陽性（已感染病毒）</div>
+                        <div style="font-size:12px; color:#fecaca; margin-top:4px;">
+                            你於第 ${p.infectedRound} 回合受到感染！<br>
+                            ${p.roleKey === 'terrorist' ? '（你是恐怖分子，免疫病毒發作死亡）' : `若治療劑未及時完成，你將於 <strong>第 ${deathR} 回合</strong> 發作死亡！`}
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultHtml = `
+                    <div class="lab-result-box negative">
+                        <div style="font-size:15px; font-weight:900; color:#86efac;">🟢 確診結果：陰性（目前健康未感染）</div>
+                        <div style="font-size:12px; color:#dcfce7; margin-top:4px;">請小心相鄰號碼玩家的傳染風險！</div>
+                    </div>
+                `;
+            }
+
+            renderPlayerSecretTerminal(seatNum, resultHtml);
+        }
+
+        function setTerroristTarget(terroristSeat, targetSeat) {
+            playTone('steal');
+            virusRoundTerroristTarget = targetSeat;
+            const tPlayer = virusPlayers.find(x => x.seatNumber === terroristSeat);
+            if (tPlayer) tPlayer.missionDone = true;
+            showToast(`☣️ 已秘密鎖定 ${targetSeat}號 為本回合初始投放目標`);
+            renderPlayerSecretTerminal(terroristSeat);
+        }
+
+        function executeResearcherTask(seatNum) {
+            const p = virusPlayers.find(x => x.seatNumber === seatNum);
+            if (!p || p.abilityUsed === virusRound) return;
+
+            p.abilityUsed = virusRound;
+            if (p.infectedRound !== null) {
+                playTone('click');
+                renderPlayerSecretTerminal(seatNum, `
+                    <div class="lab-result-box positive">
+                        <div style="font-size:14px; font-weight:900; color:#fca5a5;">⚠️ 樣本受病毒污染，研發失敗！</div>
+                        <div style="font-size:12px; color:#fecaca; margin-top:4px;">檢驗儀顯示你的血液樣本已帶有病毒（陽性），本次無法推進治療劑進度！</div>
+                    </div>
+                `);
+                return;
+            }
+
+            playTone('achieve');
+            p.missionDone = true;
+            virusCureProgress = Math.min(100, virusCureProgress + 25);
+            virusPublicLogs.unshift(`💉 【${virusRound}R 研發快訊】有研究員成功提交潔淨樣本，治療劑進度提升至 ${virusCureProgress}%！`);
+            renderVirusBoard();
+
+            if (virusCureProgress >= 100) {
+                closeVirusTerminal();
+                finalizeVirusMatch('citizen', '💉 治療劑研發進度已達 100%！市民陣營成功遏止病毒擴散！');
+                return;
+            }
+
+            renderPlayerSecretTerminal(seatNum, `
+                <div class="lab-result-box negative">
+                    <div style="font-size:14px; font-weight:900; color:#86efac;">✅ 潔淨樣本研發成功！</div>
+                    <div style="font-size:12px; color:#dcfce7; margin-top:4px;">治療劑總進度已提升至 <strong>${virusCureProgress}%</strong>！</div>
+                </div>
+            `);
+        }
+
+        function executeJournalistScoop(journalistSeat, targetSeat) {
+            const jPlayer = virusPlayers.find(x => x.seatNumber === journalistSeat);
+            const target = virusPlayers.find(x => x.seatNumber === targetSeat);
+            if (!jPlayer || !target || jPlayer.missionDone) return;
+
+            playTone('achieve');
+            jPlayer.missionDone = true;
+            const targetRoleName = VIRUS_ROLES[target.roleKey].name;
+            const targetFaction = VIRUS_ROLES[target.roleKey].factionLabel;
+
+            const box = document.getElementById('virus-terminal-content');
+            box.innerHTML = `
+                <h3>📰 記者獨家採訪結果</h3>
+                <div class="lab-result-box" style="border-color:#facc15;">
+                    <div style="font-size:14px; color:#e5e7eb;">經深入調查，<strong style="color:#fde047;">${target.seatNumber}號 · ${target.name}</strong> 的真實身分為：</div>
+                    <div style="font-size:22px; font-weight:900; color:#ffffff; margin:8px 0;">【${targetRoleName}】</div>
+                    <div style="font-size:12px; color:#9ca3af;">所屬陣營：${targetFaction}</div>
+                </div>
+                <p style="font-size:12px; color:#d1d5db; margin:8px 0;">你可以選擇將此情報私密保留，或立即發布全場頭條公開其角色：</p>
+                <button type="button" class="btn-primary-action chamfer-sm" style="background:#eab308; color:#111827; margin-bottom:8px;" onclick="publishJournalistHeadline(${target.seatNumber})">📢 發布全場頭條（公開 ${target.seatNumber}號 角色）</button>
+                <button type="button" class="btn-cancel-modal" onclick="closeVirusTerminal()">🔒 僅自己知道，關閉終端</button>
+            `;
+        }
+
+        function publishJournalistHeadline(targetSeat) {
+            const target = virusPlayers.find(x => x.seatNumber === targetSeat);
+            if (!target) return;
+            playTone('steal');
+            target.publiclyRevealed = true;
+            const rName = VIRUS_ROLES[target.roleKey].name;
+            virusPublicLogs.unshift(`📰 【${virusRound}R 記者頭條快報】記者公開爆料：${target.seatNumber}號（${target.name}）的真實身分是「${rName}」！`);
+            closeVirusTerminal();
+            renderVirusBoard();
+            showToast(`📰 頭條已發布！${target.seatNumber}號 身分公開為【${rName}】`);
+        }
+
+        function executeInvestigatorSearch(invSeat, targetSeat) {
+            const inv = virusPlayers.find(x => x.seatNumber === invSeat);
+            const target = virusPlayers.find(x => x.seatNumber === targetSeat);
+            if (!inv || !target || virusRoundInvestigated[virusRound]) return;
+
+            playTone('click');
+            virusRoundInvestigated[virusRound] = true;
+            const isTerrorist = target.roleKey === 'terrorist';
+            if (isTerrorist && !inv.foundTerrorists.includes(target.seatNumber)) {
+                inv.foundTerrorists.push(target.seatNumber);
+            }
+            if (inv.foundTerrorists.length >= 2) {
+                inv.missionDone = true;
+            }
+
+            renderPlayerSecretTerminal(invSeat, `
+                <div class="lab-result-box ${isTerrorist ? 'positive' : 'negative'}">
+                    <div style="font-size:15px; font-weight:900; color:${isTerrorist ? '#fca5a5' : '#86efac'};">
+                        ${isTerrorist ? `🚨 搜查確認：${target.seatNumber}號 是【恐怖分子】！` : `🔎 搜查結果：${target.seatNumber}號 不是恐怖分子`}
+                    </div>
+                    <div style="font-size:12px; color:#e5e7eb; margin-top:4px;">
+                        目前累計鎖定恐怖分子：<strong>${inv.foundTerrorists.length} / 2 名</strong>
+                        ${inv.missionDone ? '<br><span style="color:#d8ff2e; font-weight:900;">✅ 搜查官獨立任務條件已達成！保持存活至遊戲結束即可勝出！</span>' : ''}
+                    </div>
+                </div>
+            `);
+        }
+
+        function executeFanaticRitual(seatNum) {
+            const p = virusPlayers.find(x => x.seatNumber === seatNum);
+            if (!p) return;
+            if (p.infectedRound === null) {
+                playTone('click');
+                renderPlayerSecretTerminal(seatNum, `
+                    <div class="lab-result-box" style="border-color:#c084fc;">
+                        <div style="font-size:14px; font-weight:900; color:#e9d5ff;">⚠️ 尚未受感染，無法啟動儀式</div>
+                        <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">你目前體內沒有病毒！必須先被傳染後才能觸發狂熱超級傳播。</div>
+                    </div>
+                `);
+                return;
+            }
+
+            playTone('steal');
+            p.superSpreadActive = true;
+            p.missionDone = true;
+            renderPlayerSecretTerminal(seatNum, `
+                <div class="lab-result-box positive">
+                    <div style="font-size:14px; font-weight:900; color:#f0abfc;">☣️ 狂熱超級傳播已啟動！</div>
+                    <div style="font-size:12px; color:#f3e8ff; margin-top:4px;">本回合結算時，你體內的變異病毒將向左右各延伸 2 格強力傳染！</div>
+                </div>
+            `);
+        }
+
+        function executeCitizenPatrol(seatNum) {
+            const p = virusPlayers.find(x => x.seatNumber === seatNum);
+            if (!p || p.missionDone) return;
+            playTone('achieve');
+            p.missionDone = true;
+            p.labChecksLeft++;
+            renderPlayerSecretTerminal(seatNum, `
+                <div class="lab-result-box negative">
+                    <div style="font-size:14px; font-weight:900; color:#86efac;">🛡️ 社區防疫巡邏完成！</div>
+                    <div style="font-size:12px; color:#dcfce7; margin-top:4px;">你已額外獲得 1 次【感染確診檢查】機會！</div>
+                </div>
+            `);
+        }
+
+        // ==========================================
+        // 回合結算：環狀號碼傳染與 2 回合發作死亡演算法
+        // ==========================================
+        function getRingNeighbor(seatNum, offset) {
+            const n = virusPlayers.length;
+            const zeroIdx = (((seatNum - 1 + offset) % n) + n) % n;
+            return virusPlayers[zeroIdx];
+        }
+
+        function advanceVirusRound() {
+            playTone('click');
+
+            // 第1回合若恐怖分子尚未選目標，自動隨機選 1 名存活非恐怖分子作為首例感染者（確保病毒鏈啟動）
+            if (virusRound === 1 && !virusRoundTerroristTarget) {
+                const candidates = virusPlayers.filter(p => p.alive && p.roleKey !== 'terrorist');
+                if (candidates.length > 0) {
+                    const autoPick = candidates[Math.floor(Math.random() * candidates.length)];
+                    virusRoundTerroristTarget = autoPick.seatNumber;
+                }
+            }
+
+            const total = virusPlayers.length;
+
+            // 1. 先執行既有的「上回合（及更早）感染者」向左右相鄰號碼傳染（在當前回合 virusRound 產生新感染）
+            const existingCarriers = virusPlayers.filter(p => p.alive && p.infectedRound !== null && p.infectedRound <= virusRound);
+            const newlyInfectedSeats = new Set();
+
+            existingCarriers.forEach(carrier => {
+                const reach = (carrier.roleKey === 'fanatic' && carrier.superSpreadActive) ? [1, -1, 2, -2] : [1, -1];
+                reach.forEach(step => {
+                    const neighbor = getRingNeighbor(carrier.seatNumber, step);
+                    if (neighbor && neighbor.alive && neighbor.infectedRound === null && neighbor.roleKey !== 'terrorist') {
+                        newlyInfectedSeats.add(neighbor.seatNumber);
+                        carrier.spreadCount++;
+                    }
+                });
+            });
+
+            newlyInfectedSeats.forEach(seat => {
+                const target = virusPlayers.find(p => p.seatNumber === seat);
+                if (target && target.infectedRound === null) {
+                    target.infectedRound = virusRound;
+                }
+            });
+
+            // 2. 執行本回合恐怖分子秘密投放的初始感染
+            if (virusRoundTerroristTarget) {
+                const directTarget = virusPlayers.find(p => p.seatNumber === virusRoundTerroristTarget);
+                if (directTarget && directTarget.alive && directTarget.infectedRound === null && directTarget.roleKey !== 'terrorist') {
+                    directTarget.infectedRound = virusRound;
+                }
+                virusRoundTerroristTarget = null;
+            }
+
+            // 3. 進入下一回合，並檢查「感染後第 2 回合發作死亡」
+            const nextRound = virusRound + 1;
+            const newlyDeadList = [];
+
+            virusPlayers.forEach(p => {
+                if (p.alive && p.infectedRound !== null && p.roleKey !== 'terrorist') {
+                    if ((nextRound - p.infectedRound) >= 2) {
+                        p.alive = false;
+                        p.diedInRound = nextRound;
+                        p.publiclyRevealed = true;
+                        newlyDeadList.push(p);
+                    }
+                }
+            });
+
+            virusRound = nextRound;
+            virusSecondsLeft = 30 * 60;
+            virusTimerPaused = false;
+            document.getElementById('btn-virus-pause').textContent = '⏸ 暫停';
+
+            const curInfectedCount = virusPlayers.filter(p => p.alive && p.infectedRound !== null).length;
+            const totalDeadCount = virusPlayers.filter(p => !p.alive).length;
+
+            if (newlyDeadList.length > 0) {
+                playTone('steal');
+                const deadNames = newlyDeadList.map(d => `${d.seatNumber}號 ${d.name}（${VIRUS_ROLES[d.roleKey].name}）`).join('、');
+                virusPublicLogs.unshift(`💀 【第 ${virusRound} 回合播報】發作死亡並移入荷官隔離房：${deadNames}。目前場內感染 ${curInfectedCount} 人、累計死亡 ${totalDeadCount} 人、治療劑 ${virusCureProgress}%。`);
+                showToast(`💀 第 ${virusRound} 回合：${newlyDeadList.length} 名玩家發作死亡！`);
+            } else {
+                playTone('achieve');
+                virusPublicLogs.unshift(`📢 【第 ${virusRound} 回合播報】本回合無新增死亡。目前場內感染 ${curInfectedCount} 人、累計死亡 ${totalDeadCount} 人、治療劑 ${virusCureProgress}%。`);
+                showToast(`📢 進入第 ${virusRound} 回合（感染 ${curInfectedCount} 人｜治療劑 ${virusCureProgress}%）`);
+            }
+
+            // 4. 檢查勝負條件
+            if (checkVirusVictoryConditions()) {
+                return;
+            }
+
+            if (virusRound > 5) {
+                virusRound = 5;
+                renderVirusBoard();
+                finalizeVirusMatch('final', '⏰ 5 個回合已全部結束，進行最終生存與感染結算！');
+                return;
+            }
+
+            renderVirusBoard();
+        }
+
+        function checkVirusVictoryConditions() {
+            const aliveTerrorists = virusPlayers.filter(p => p.alive && p.roleKey === 'terrorist');
+            const aliveCitizens = virusPlayers.filter(p => p.alive && VIRUS_ROLES[p.roleKey].faction === 'citizen');
+            const healthyAliveCitizens = aliveCitizens.filter(p => p.infectedRound === null);
+
+            if (virusCureProgress >= 100) {
+                renderVirusBoard();
+                finalizeVirusMatch('citizen', '💉 治療劑研發完成（100%），市民陣營大獲全勝！');
+                return true;
+            }
+
+            if (aliveTerrorists.length === 0) {
+                renderVirusBoard();
+                finalizeVirusMatch('citizen', '🛡️ 所有恐怖分子均已死亡出局，市民陣營獲勝！');
+                return true;
+            }
+
+            if (healthyAliveCitizens.length === 0) {
+                renderVirusBoard();
+                finalizeVirusMatch('terrorist', '☣️ 所有存活的市民陣營玩家均已受感染！恐怖分子陣營獲勝！');
+                return true;
+            }
+
+            return false;
+        }
+
+        function confirmForceEndVirusGame() {
+            playTone('click');
+            finalizeVirusMatch('final', '🏁 提前結束主賽，揭曉全員秘密角色與勝敗結果！');
+        }
+
+        function finalizeVirusMatch(triggerType, reasonText) {
+            stopVirusTimer();
+            isVirusMatchStarted = false;
+
+            const aliveTerrorists = virusPlayers.filter(p => p.alive && p.roleKey === 'terrorist');
+            const aliveCitizens = virusPlayers.filter(p => p.alive && VIRUS_ROLES[p.roleKey].faction === 'citizen');
+            const healthyAliveCitizens = aliveCitizens.filter(p => p.infectedRound === null);
+
+            let mainWinner = 'citizen';
+            if (triggerType === 'terrorist') {
+                mainWinner = 'terrorist';
+            } else if (triggerType === 'citizen') {
+                mainWinner = 'citizen';
+            } else {
+                // 第5回合結束或手動結算判斷
+                if (virusCureProgress >= 100 || aliveTerrorists.length === 0) {
+                    mainWinner = 'citizen';
+                } else if (healthyAliveCitizens.length === 0 || healthyAliveCitizens.length <= aliveTerrorists.length) {
+                    mainWinner = 'terrorist';
+                } else {
+                    mainWinner = 'citizen';
+                }
+            }
+
+            // 檢查中立角色獨立勝利條件
+            const investigator = virusPlayers.find(p => p.roleKey === 'investigator');
+            const invWon = investigator && investigator.alive && investigator.foundTerrorists.length >= 2;
+
+            const fanatic = virusPlayers.find(p => p.roleKey === 'fanatic');
+            const fanaticWon = fanatic && !fanatic.alive && fanatic.infectedRound !== null && fanatic.spreadCount >= 1;
+
+            const winnerTitle = mainWinner === 'terrorist'
+                ? '☣️ 恐怖分子陣營獲勝！'
+                : '💉 市民陣營獲勝！';
+
+            let extraWinners = [];
+            if (invWon) extraWinners.push(`🕵️ 搜查官（${investigator.seatNumber}號 ${investigator.name}）達成獨立勝利`);
+            if (fanaticWon) extraWinners.push(`🔮 狂熱分子（${fanatic.seatNumber}號 ${fanatic.name}）達成獨立勝利`);
+
+            document.getElementById('virus-winner-text').innerHTML = `
+                <div>${winnerTitle}</div>
+                <div style="font-size:12px; color:#e5e7eb; font-weight:600; margin-top:4px;">${reasonText}</div>
+                ${extraWinners.length > 0 ? `<div style="font-size:12px; color:#fde047; margin-top:5px;">⭐ 額外中立勝者：${extraWinners.join('、')}</div>` : ''}
+            `;
+
+            const listHtml = virusPlayers.map(p => {
+                const rInfo = VIRUS_ROLES[p.roleKey];
+                const stateTag = !p.alive
+                    ? `<span style="color:#f87171;">💀 ${p.diedInRound}R死亡</span>`
+                    : (p.infectedRound !== null ? `<span style="color:#4ade80;">☣️ 存活(染疫)</span>` : `<span style="color:#38bdf8;">🟢 存活(健康)</span>`);
+                return `
+                    <div style="border-bottom:1px solid rgba(255,255,255,0.08); padding:4px 0;">
+                        <strong>${p.seatNumber}號 ${p.name}</strong> — <span style="color:#d8b4fe;">${rInfo.name}</span> ｜ ${stateTag}
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('virus-result-details').innerHTML = listHtml;
+            document.getElementById('virus-result-modal').style.display = 'flex';
+        }
+
+        function openPublicNewsModal() {
+            playTone('click');
+            const listEl = document.getElementById('virus-news-list');
+            listEl.innerHTML = virusPublicLogs.map(log => `<div style="border-bottom:1px solid rgba(255,255,255,0.08); padding:6px 0;">${log}</div>`).join('');
+            document.getElementById('virus-news-modal').style.display = 'flex';
+        }
+
+        function closePublicNewsModal() {
+            playTone('click');
+            document.getElementById('virus-news-modal').style.display = 'none';
+        }
+
+        function restartVirusSamePlayers() {
+            playTone('click');
+            document.getElementById('virus-result-modal').style.display = 'none';
+            startVirusLotteryAndDraw();
+        }
+
+        function reopenVirusSetup() {
+            playTone('click');
+            document.getElementById('virus-result-modal').style.display = 'none';
+            gameVirusWarElement.classList.remove('active-game');
+            openVirusSetupScreen();
         }
     </script>
 </body>
